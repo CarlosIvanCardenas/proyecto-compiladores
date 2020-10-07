@@ -1,0 +1,14 @@
+program find_factorial
+
+var num: int = 10
+var factorial: int = 1
+
+main() {
+    num = 10
+    factorial = 1
+    for i = 1 to num {
+        factorial = factorial * i
+    }
+    write("Factorial =")
+    write("factorial")
+}
