@@ -6,7 +6,7 @@ class Lexer(SlyLexer):
               AND, OR, EQ, NE, LT, GT, ASSIGN, CTE_S, CTE_I, CTE_F, CTE_C}
 
     # Set of literal tokens
-    literals = {'(', ')', '{', '}', ';', ':', ',', '+', '-', '*', '/'}
+    literals = {'(', ')', '[', ']', '{', '}', ';', ':', ',', '+', '-', '*', '/'}
 
     # String containing ignored characters between tokens
     ignore = ' \t'
