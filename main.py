@@ -12,7 +12,7 @@ def main():
     for tok in lexer.tokenize(input_text):
         print('type=%r, value=%r' % (tok.type, tok.value))
 
-    # PARSER: Synctactic Analysis
+    # PARSER: Syntactic Analysis
     print('\n\nPARSER Analysis:')
     parser = CompParser()
     result = parser.parse(lexer.tokenize(input_text))

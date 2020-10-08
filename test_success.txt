@@ -1,7 +1,7 @@
 program find_factorial
 
-var num: int = 10
-var factorial: int = 1
+var num: int
+var factorial: int
 
 main() {
     num = 10

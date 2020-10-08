@@ -1,5 +1,6 @@
 from sly import Lexer as SlyLexer
 
+
 class CompLexer(SlyLexer):
     # Set of token names
     tokens = {PROGRAM, ID, VAR, INT, FLOAT, CHAR, FUN, VOID, RETURN, MAIN, IF, ELSE, READ, WRITE, FOR, TO, WHILE,
@@ -53,5 +54,6 @@ class CompLexer(SlyLexer):
     def error(self, t):
         print('LEXICAL ERROR! Line %d: Bad character %r' % (self.lineno, t.value[0]))
         self.index += 1
+
 
 Tokens = CompLexer.tokens

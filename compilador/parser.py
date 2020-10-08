@@ -2,7 +2,7 @@ from sly import Parser as SlyParser
 from compilador.lexer import Tokens
 
 class CompParser(SlyParser):
-    # Define strating grammar
+    # Define starting grammar
     start = 'program'
     # Get the token list from the lexer
     tokens = Tokens
