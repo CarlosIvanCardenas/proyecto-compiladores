@@ -1,4 +1,4 @@
-# Proyecto compiladores **Lenguage Dale++**
+# Proyecto compiladores **Lenguaje Dale++**
 Proyecto final de la materia "Diseño de compiladores"
 
 ## Avances actuales 
