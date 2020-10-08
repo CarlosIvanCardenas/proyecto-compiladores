@@ -1,12 +1,11 @@
 from sly import Parser as SlyParser
-from lexer import Lexer
+from compilador.lexer import Tokens
 
-class Parser(SlyParser):
-
+class CompParser(SlyParser):
+    # Define strating grammar
     start = 'program'
-
-    # Get the token list from the lexer (required)
-    tokens = Lexer.tokens
+    # Get the token list from the lexer
+    tokens = Tokens
 
     # Grammar rules and actions
     @_('PROGRAM ID vars funs main')
