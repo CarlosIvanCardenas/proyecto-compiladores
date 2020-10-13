@@ -57,3 +57,6 @@ class CuboSemantico:
             }
         }
     }
+
+    def typematch(self, op_izq, op_der, operador):
+        return self.cubo_semantico[op_izq][op_der][operador]
