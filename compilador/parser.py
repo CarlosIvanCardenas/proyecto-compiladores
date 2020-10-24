@@ -47,6 +47,7 @@ class CompParser(SlyParser):
     @_('FUN ID "(" params ")" ":" VOID bloque')
     def fun_void(self, p):
         self.semantica.set_scope_funcion(p.ID, "void")
+        # Manejo de Memoria
         self.semantica.termina_funcion()
         print('Regla: fun_void')
         pass
@@ -59,12 +60,12 @@ class CompParser(SlyParser):
     @_('param_list')
     def params(self, p):
         print('Regla: params')
-        return p.param_list
+        pass
 
     @_('empty')
     def params(self, p):
         print('Regla: params empty')
-        return []
+        pass
 
     @_('ID ":" tipo param_list1')
     def param_list(self, p):
