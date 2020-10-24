@@ -31,4 +31,5 @@ almacenara en su correspondiente lista dentro del Directorio de Procedimientos
 class ElementoTablaVariables:
     name: str
     type: TipoVariable
+    size: int
     dimensiones: (int, int) = (None, None)

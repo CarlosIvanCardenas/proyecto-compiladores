@@ -1,11 +1,14 @@
 from sly import Parser as SlyParser
 from compilador.lexer import Tokens
+from compilador.semantica import AccionesSemanticas
 
 class CompParser(SlyParser):
     # Define starting grammar
     start = 'program'
     # Get the token list from the lexer
     tokens = Tokens
+
+    semantica = AccionesSemanticas()
 
     # Grammar rules and actions
     @_('PROGRAM ID vars funs main')
@@ -15,23 +18,20 @@ class CompParser(SlyParser):
 
     @_('var vars', 'empty')
     def vars(self, p):
+        self.semantica.set_variables_globales()
         print('Regla: vars')
         pass
 
-    @_('VAR ID var1 ":" tipo')
+    @_('VAR ID array_dec ":" tipo')
     def var(self, p):
+        self.semantica.agregar_variable(var=p.ID, tipo=p.tipo, dims=p.array_dec)
         print('Regla: var')
-        pass
-
-    @_('array_dec', 'empty')
-    def var1(self, p):
-        print('Regla: var1')
         pass
 
     @_('INT', 'FLOAT', 'CHAR')
     def tipo(self, p):
         print('Regla: tipo')
-        pass
+        return p[0]
 
     @_('fun funs', 'fun_void funs', 'empty')
     def funs(self, p):
@@ -40,11 +40,13 @@ class CompParser(SlyParser):
 
     @_('FUN ID "(" params ")" ":" tipo "{" estatutos return_stmt "}"')
     def fun(self, p):
+        self.semantica.set_scope_funcion(p.ID, p.tipo)
         print('Regla: fun')
         pass
 
     @_('FUN ID "(" params ")" ":" VOID bloque')
     def fun_void(self, p):
+        self.semantica.set_scope_funcion(p.ID, "void")
         print('Regla: fun_void')
         pass
 
@@ -53,13 +55,19 @@ class CompParser(SlyParser):
         print('Regla: return_stmt')
         pass
 
-    @_('param_list', 'empty')
+    @_('param_list')
     def params(self, p):
         print('Regla: params')
-        pass
+        return p.param_list
+
+    @_('empty')
+    def params(self, p):
+        print('Regla: params empty')
+        return []
 
     @_('ID ":" tipo param_list1')
     def param_list(self, p):
+        self.semantica.agregar_parametro(p.ID, p.tipo)
         print('Regla: param_list')
         pass
 
@@ -223,15 +231,20 @@ class CompParser(SlyParser):
         print('Regla: constante')
         pass
 
-    @_('ID "[" CTE_I "]" array_dec1')
+    @_('"[" CTE_I "]"')
     def array_dec(self, p):
-        print('Regla: array_dec')
-        pass
+        print('Regla: array_dec 1 dim')
+        return [p[1]]
 
-    @_('"[" CTE_I "]"', 'empty')
-    def array_dec1(self, p):
-        print('Regla: array_dec1')
-        pass
+    @_('"[" CTE_I "]" "[" CTE_I "]"')
+    def array_dec(self, p):
+        print('Regla: array_dec 2 dims')
+        return [p[1], p[4]]
+
+    @_('empty')
+    def array_dec(self, p):
+        print('Regla: array_dec empty')
+        return []
 
     @_('ID "[" exp "]" array_usage1')
     def array_usage(self, p):
