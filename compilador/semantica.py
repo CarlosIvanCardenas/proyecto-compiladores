@@ -1,5 +1,6 @@
 from compilador.cubo_semantico import CuboSemantico
 from compilador.directorio_procedimientos import ElementoDirectorioFunciones, ElementoTablaVariables, TipoVariable
+from compilador.cuadruplo import Operador, Cuadruplo
 
 class AccionesSemanticas:
     cubo_semantico = CuboSemantico()    # 
@@ -7,6 +8,11 @@ class AccionesSemanticas:
     variables_globales = dict()         # Tabla de variables globales
     variables_actuales: dict()          # Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion)
     scope_actual = 'global'             # Scope activo
+    lista_cuadruplos = []
+    pila_operandos = []
+    pila_operadores = []
+    pila_tipos = []
+    cont = 0
 
 
     def set_variables_globales(self):
@@ -71,3 +77,24 @@ class AccionesSemanticas:
 
     def termina_funcion(self):
         self.set_variables_globales()
+
+    def generar_cuadruplo(self):
+        right_operand = self.pila_operandos.pop()
+        right_type = self.pila_tipos.pop()
+        left_operand = self.pila_operandos.pop()
+        left_type = self.pila_tipos.pop()
+        operator = Operador(self.pila_operadores.pop())
+        result_type = self.cubo_semantico[left_type][right_type]
+        if result_type != "error":
+            result = "temp_" + self.cont # Pedir dirección de memoria para el resultado
+            self.cont += 1
+            self.agregar_variable(result, result_type, [])
+            self.lista_cuadruplos.append(Cuadruplo(operator, left_operand, right_operand, result))
+            self.pila_operandos.append(result)
+            self.pila_tipos.append(result_type)
+        else:
+            print("Type mismatch")
+
+    def añadir_operando(self, operand):
+        self.pila_operandos.append(operand)
+        self.pila_tipos.append()
