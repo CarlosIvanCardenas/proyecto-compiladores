@@ -68,3 +68,6 @@ class AccionesSemanticas:
             name = param,
             type = tipo_variable,
             size = 1)
+
+    def termina_funcion(self):
+        self.set_variables_globales()

@@ -47,6 +47,7 @@ class CompParser(SlyParser):
     @_('FUN ID "(" params ")" ":" VOID bloque')
     def fun_void(self, p):
         self.semantica.set_scope_funcion(p.ID, "void")
+        self.semantica.termina_funcion()
         print('Regla: fun_void')
         pass
 
