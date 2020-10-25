@@ -128,7 +128,7 @@ class CompParser(SlyParser):
         print('Regla: asignacion')
         pass
 
-    @_('IF "(" expresiones ")" bloque condicion1')
+    @_('IF "(" expresiones ")" bloque condicion1 end_if')
     def condicion(self, p):
         print('Regla: condicion')
         pass
@@ -136,6 +136,11 @@ class CompParser(SlyParser):
     @_('ELSE bloque', 'empty')
     def condicion1(self, p):
         print('Regla: condicion1')
+        pass
+
+    @_('')
+    def end_if(self, p):
+        print('Regla: condicion')
         pass
 
     @_('READ "(" ID lectura1 ")"')
@@ -213,7 +218,12 @@ class CompParser(SlyParser):
             self.semantica.generar_cuadruplo()
         pass
 
-    @_('termino2 termino', 'empty')
+    @_('termino2 termino')
+    def termino1(self, p):
+        print('Regla: termino1')
+        pass
+
+    @_('empty')
     def termino1(self, p):
         print('Regla: termino1')
         pass
@@ -224,8 +234,14 @@ class CompParser(SlyParser):
         self.semantica.pila_operadores.append(p[0])
         pass
 
-    @_('"(" exp ")"', 'factor1 constante')
+    @_('"(" add_par exp ")" remove_par', 'factor1 constante')
     def factor(self, p):
+        print('Regla: factor')
+        pass
+
+    @_('')
+    def add_par(self, p):
+        listaquad.push('(')
         print('Regla: factor')
         pass
 

@@ -8,11 +8,12 @@ class AccionesSemanticas:
     variables_globales = dict()         # Tabla de variables globales
     variables_actuales: dict()          # Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion)
     scope_actual = 'global'             # Scope activo
-    lista_cuadruplos = []
-    pila_operandos = []
-    pila_operadores = []
-    pila_tipos = []
-    cont = 0
+    lista_cuadruplos = []               # 
+    pila_operandos = []                 # 
+    pila_operadores = []                # 
+    pila_tipos = []                     # 
+    pila_saltos = []                    # 
+    cont = 0                            # 
 
 
     def set_variables_globales(self):
