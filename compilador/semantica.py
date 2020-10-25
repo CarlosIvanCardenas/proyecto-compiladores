@@ -9,12 +9,12 @@ class AccionesSemanticas:
     variables_globales = dict()         # Tabla de variables globales
     variables_actuales: dict()          # Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion)
     scope_actual = 'global'             # Scope activo
-    lista_cuadruplos = []               # 
-    pila_operandos = []                 # 
-    pila_operadores = []                # 
-    pila_tipos = []                     # 
-    pila_saltos = []                    # 
-    cont = 0                            # 
+    lista_cuadruplos = []               # Lista de cuadruplos
+    pila_operandos = []                 # Pila de operandos
+    pila_operadores = []                # Pila de operadores
+    pila_tipos = []                     # Pila de tipos
+    pila_saltos = []                    # Pila de saltos logicos en la lista de operandos               
+    cont_temporales = 0                 # Contador de variables temporales
 
     def get_var(self, v):
         var = self.variables_actuales.get(v)
@@ -93,8 +93,8 @@ class AccionesSemanticas:
         operator = Operator(self.pila_operadores.pop())
         result_type = self.cubo_semantico.typematch(left_type, right_type, operator)
         if result_type != "error":
-            result = "temp_" + str(self.cont)  # Pedir dirección de memoria para el resultado
-            self.cont += 1
+            result = "temp_" + str(self.cont_temporales)  # Pedir dirección de memoria para el resultado
+            self.cont_temporales += 1
             self.agregar_variable(result, result_type, [])
             self.lista_cuadruplos.append(Cuadruplo(operator, left_operand, right_operand, result))
             self.pila_operandos.append(result)
@@ -113,3 +113,34 @@ class AccionesSemanticas:
     def push_const_operand(self, operand):
         self.pila_operandos.append(operand)
         self.pila_tipos.append(ConstType(type(operand)).name)
+
+    def iniciar_if(self):
+        if self.pila_tipos and self.pila_tipos[-1] == 'bool':
+            tipo = self.pila_tipos.pop()
+            res = self.pila_operandos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('gotof'), res, '', ''))
+            self.pila_saltos.append(len(self.lista_cuadruplos) - 1)
+        else:   
+            raise Exception("Type mismatch")
+
+    def iniciar_else(self):
+        self.lista_cuadruplos.append(Cuadruplo(Operator('goto'), res, '', ''))
+        if self.pila_saltos:
+            false = self.pila_saltos.pop()
+        else:
+            raise Exception("Jump stack error")
+        self.pila_saltos.append(len(self.lista_cuadruplos) - 1)
+        self.completar_salto(false, len(self.lista_cuadruplos))
+
+    def end_if(self):
+        if self.pila_saltos:
+            end = self.pila_saltos.pop()
+            self.completar_salto(end, len(self.lista_cuadruplos))
+        else:
+            raise Exception("Jump stack error")
+
+    def completar_salto(self, quad, salto):
+        if len(self.lista_cuadruplos) > quad:
+            self.lista_cuadruplos[quad].result = salto
+        else:   
+            raise Exception("Quadruple error, index out of bounds")

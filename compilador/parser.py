@@ -141,13 +141,26 @@ class CompParser(SlyParser):
         pass
 
     # ESTATUTOS CONDICIONALES
-    @_('IF "(" expresiones ")" bloque condicion1')
+    @_('start_if bloque condicion1')
     def condicion(self, p):
+        self.semantica.end_if()
         print('Regla: condicion')
         pass
 
-    @_('ELSE bloque', 'empty')
+    @_('IF "(" expresiones ")"')
+    def start_if(self, p):
+        self.semantica.iniciar_if()
+        print('Regla: condicion')
+        pass
+
+    @_('else bloque', 'empty')
     def condicion1(self, p):
+        print('Regla: condicion1')
+        pass
+
+    @_('ELSE')
+    def else(self, p):
+        self.semantica.iniciar_else()
         print('Regla: condicion1')
         pass
 
@@ -272,12 +285,6 @@ class CompParser(SlyParser):
 
     @_('factor1 constante')
     def factor(self, p):
-        print('Regla: factor')
-        pass
-
-    @_('')
-    def add_par(self, p):
-        listaquad.push('(')
         print('Regla: factor')
         pass
 
