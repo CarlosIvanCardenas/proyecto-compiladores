@@ -9,6 +9,11 @@ class Operator(Enum):
     ASSIGN = '='
     # Agregar los que faltan
 
+class ConstType(Enum):
+    int = int
+    float = float
+    string = str
+    char = str
 
 @dataclass
 class Cuadruplo:
