@@ -125,6 +125,8 @@ class CompParser(SlyParser):
     @_('ID ASSIGN expresion')
     def asignacion(self, p):
         print('Regla: asignacion')
+        if self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-':
+            self.semantica.generarate_quad()
         pass
 
     @_('IF "(" expresiones ")" bloque condicion1')
@@ -167,7 +169,13 @@ class CompParser(SlyParser):
         print('Regla: expresiones')
         pass
 
-    @_('AND expresiones', 'OR expresiones', 'empty')
+    @_('AND expresiones', 'OR expresiones')
+    def expresiones1(self, p):
+        print('Regla: expresiones1')
+        self.semantica.pila_operadores.append(p[0])
+        pass
+
+    @_('empty')
     def expresiones1(self, p):
         print('Regla: expresiones1')
         pass
@@ -177,7 +185,14 @@ class CompParser(SlyParser):
         print('Regla: expresion')
         pass
 
-    @_('expresion2 exp', 'empty')
+    @_('expresion2 exp')
+    def expresion1(self, p):
+        print('Regla: expresion1')
+        if self.semantica.pila_operadores[-1] in ['>', '<', '!=', '==']:
+            self.semantica.generarate_quad()
+        pass
+
+    @_('empty')
     def expresion1(self, p):
         print('Regla: expresion1')
         pass
@@ -185,6 +200,7 @@ class CompParser(SlyParser):
     @_('GT', 'LT', 'NE', 'EQ')
     def expresion2(self, p):
         print('Regla: expresion2')
+        self.semantica.pila_operadores.append(p[0])
         pass
 
     @_('termino exp1')
@@ -223,7 +239,19 @@ class CompParser(SlyParser):
         self.semantica.pila_operadores.append(p[0])
         pass
 
-    @_('"(" exp ")"', 'factor1 constante')
+    @_('"(" add_par exp ")"')
+    def factor(self, p):
+        print('Regla: factor')
+        self.semantica.pila_operadores.pop()
+        pass
+
+    @_('')
+    def add_par(self, p):
+        print('Regla: add_par')
+        self.semantica.pila_operadores.append(p[0])
+        pass
+
+    @_('factor1 constante')
     def factor(self, p):
         print('Regla: factor')
         pass
