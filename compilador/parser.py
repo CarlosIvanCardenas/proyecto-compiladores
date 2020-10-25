@@ -191,7 +191,7 @@ class CompParser(SlyParser):
     def exp(self, p):
         print('Regla: exp')
         if self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-':
-            self.semantica.generar_cuadruplo()
+            self.semantica.generarate_quad()
         pass
 
     @_('exp2 exp', 'empty')
@@ -209,7 +209,7 @@ class CompParser(SlyParser):
     def termino(self, p):
         print('Regla: termino')
         if self.semantica.pila_operadores[-1] == '*' or self.semantica.pila_operadores[-1] == '/':
-            self.semantica.generar_cuadruplo()
+            self.semantica.generarate_quad()
         pass
 
     @_('termino2 termino', 'empty')
@@ -236,19 +236,18 @@ class CompParser(SlyParser):
     @_('ID')
     def constante(self, p):
         print('Regla: constante')
-        self.semantica.añadir_operando(p[0])
+        self.semantica.push_var_operand(p[0])
         pass
 
     @_('CTE_I', 'CTE_F', 'CTE_S', 'CTE_C')
     def constante(self, p):
         print('Regla: constante')
-        self.semantica.añadir_operando(p[0])
+        self.semantica.push_const_operand(p[0])
         pass
 
     @_('array_usage')
     def constante(self, p):
         print('Regla: constante')
-        self.semantica.añadir_operando(p[0])
         pass
 
     @_('"[" CTE_I "]"')

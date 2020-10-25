@@ -32,4 +32,4 @@ class ElementoTablaVariables:
     name: str
     type: TipoVariable
     size: int
-    dimensiones: (int, int) = (None, None)
+    dims: (int, int) = (None, None)
