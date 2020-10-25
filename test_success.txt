@@ -6,9 +6,6 @@ var factorial: int
 main() {
     num = 10
     factorial = 1
-    for i = 1 to num {
-        factorial = factorial * i
-    }
     write("Factorial =")
     write("factorial")
 }

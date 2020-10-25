@@ -105,7 +105,7 @@ class AccionesSemanticas:
     def push_var_operand(self, operand):
         var = self.get_var(operand)
         if var is None:
-            raise Exception("Undeclared variable")
+            raise Exception("Undeclared variable: " + operand)
         else:
             self.pila_operandos.append(var.name)
             self.pila_tipos.append(var.type)
@@ -121,12 +121,8 @@ class AccionesSemanticas:
         else:
             raise Exception("Operand stack error")
 
-    def generar_escritura(self):
-        if self.pila_operandos:
-            valor = self.pila_operandos.pop()
-            self.lista_cuadruplos.append(Cuadruplo(Operator('write'), '', '', valor))
-        else:
-            raise Exception("Operand stack error")
+    def generar_escritura(self, valor):
+        self.lista_cuadruplos.append(Cuadruplo(Operator('write'), '', '', valor))
 
     def iniciar_if(self):
         if self.pila_tipos and self.pila_tipos[-1] == 'bool':

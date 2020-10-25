@@ -136,7 +136,7 @@ class CompParser(SlyParser):
     @_('ID ASSIGN expresion')
     def asignacion(self, p):
         print('Regla: asignacion')
-        if self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-':
+        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-'):
             self.semantica.generarate_quad()
         pass
 
@@ -153,13 +153,13 @@ class CompParser(SlyParser):
         print('Regla: condicion')
         pass
 
-    @_('else bloque', 'empty')
+    @_('inicio_else bloque', 'empty')
     def condicion1(self, p):
         print('Regla: condicion1')
         pass
 
     @_('ELSE')
-    def else(self, p):
+    def inicio_else(self, p):
         self.semantica.iniciar_else()
         print('Regla: condicion1')
         pass
@@ -176,7 +176,7 @@ class CompParser(SlyParser):
         print('Regla: lectura')
         pass
 
-    @_('"," ID lectura1', 'empty')
+    @_('"," ID lectura1')
     def lectura1(self, p):
         self.semantica.generar_lectura()
         print('Regla: lectura1')
@@ -246,7 +246,7 @@ class CompParser(SlyParser):
     @_('termino exp1')
     def exp(self, p):
         print('Regla: exp')
-        if self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-':
+        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-'):
             self.semantica.generarate_quad()
         pass
 
@@ -264,7 +264,7 @@ class CompParser(SlyParser):
     @_('factor termino1')
     def termino(self, p):
         print('Regla: termino')
-        if self.semantica.pila_operadores[-1] == '*' or self.semantica.pila_operadores[-1] == '/':
+        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '*' or self.semantica.pila_operadores[-1] == '/'):
             self.semantica.generarate_quad()
         pass
 
@@ -308,8 +308,8 @@ class CompParser(SlyParser):
 
     @_('ID')
     def constante(self, p):
-        print('Regla: constante')
         self.semantica.push_var_operand(p[0])
+        print('Regla: constante')
         pass
 
     @_('CTE_I', 'CTE_F', 'CTE_S', 'CTE_C')
