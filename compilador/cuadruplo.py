@@ -7,6 +7,13 @@ class Operator(Enum):
     TIMES = '*'
     DIVIDE = '/'
     ASSIGN = '='
+    AND = '&&'
+    OR = '||'
+    READ = 'read'
+    WRITE = 'write'
+    GOTO = 'goto'
+    GOTOF = 'gotof'
+    GOTOT = 'gotot'
     # Agregar los que faltan
 
 class ConstType(Enum):
