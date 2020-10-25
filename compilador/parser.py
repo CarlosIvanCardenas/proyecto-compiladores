@@ -11,14 +11,20 @@ class CompParser(SlyParser):
     semantica = AccionesSemanticas()
 
     # Grammar rules and actions
-    @_('PROGRAM ID vars funs main')
+    @_('PROGRAM ID set_global vars funs main')
     def program(self, p):
         print('Regla: program')
         return 'Programa Exitoso'
+    
+    @_('')
+    def set_global(self, p):
+        self.semantica.set_variables_globales()
+        print('Regla: program')
+        return 'Programa Exitoso'
 
+    # Declaracion de VARIABLES GLOBALES
     @_('var vars', 'empty')
     def vars(self, p):
-        self.semantica.set_variables_globales()
         print('Regla: vars')
         pass
 
@@ -28,11 +34,13 @@ class CompParser(SlyParser):
         print('Regla: var')
         pass
 
+    # TIPO de variables
     @_('INT', 'FLOAT', 'CHAR')
     def tipo(self, p):
         print('Regla: tipo')
         return p[0]
 
+    # Declaracion de FUNCIONES
     @_('fun funs', 'fun_void funs', 'empty')
     def funs(self, p):
         print('Regla: funs')
@@ -57,6 +65,7 @@ class CompParser(SlyParser):
         print('Regla: return_stmt')
         pass
 
+    # Declaracion de PARAMETROS
     @_('param_list')
     def params(self, p):
         print('Regla: params')
@@ -78,6 +87,7 @@ class CompParser(SlyParser):
         print('Regla: param_list1')
         pass
 
+    # MAIN
     @_('MAIN "(" ")" bloque')
     def main(self, p):
         print('Regla: main')
@@ -128,7 +138,8 @@ class CompParser(SlyParser):
         print('Regla: asignacion')
         pass
 
-    @_('IF "(" expresiones ")" bloque condicion1 end_if')
+    # ESTATUTOS CONDICIONALES
+    @_('IF "(" expresiones ")" bloque condicion1')
     def condicion(self, p):
         print('Regla: condicion')
         pass
@@ -138,11 +149,7 @@ class CompParser(SlyParser):
         print('Regla: condicion1')
         pass
 
-    @_('')
-    def end_if(self, p):
-        print('Regla: condicion')
-        pass
-
+    # LECTURA
     @_('READ "(" ID lectura1 ")"')
     def lectura(self, p):
         print('Regla: lectura')
@@ -153,6 +160,7 @@ class CompParser(SlyParser):
         print('Regla: lectura1')
         pass
 
+    # ESCRITURA
     @_('WRITE "(" constante ")"')
     def escritura(self, p):
         print('Regla: escritura')
@@ -267,6 +275,8 @@ class CompParser(SlyParser):
         print('Regla: constante')
         pass
 
+
+    # Operaciones con ARREGLOS
     @_('"[" CTE_I "]"')
     def array_dec(self, p):
         print('Regla: array_dec 1 dim')
