@@ -165,19 +165,32 @@ class CompParser(SlyParser):
         pass
 
     # LECTURA
-    @_('READ "(" ID lectura1 ")"')
+    @_('READ "(" id_lectura lectura1 ")"')
     def lectura(self, p):
+        print('Regla: lectura')
+        pass
+
+    @_('ID')
+    def id_lectura(self, p):
+        self.semantica.generar_lectura()
         print('Regla: lectura')
         pass
 
     @_('"," ID lectura1', 'empty')
     def lectura1(self, p):
+        self.semantica.generar_lectura()
         print('Regla: lectura1')
+        pass
+
+    @_('empty')
+    def lectura1(self, p):
+        print('Regla: lectura1 empty')
         pass
 
     # ESCRITURA
     @_('WRITE "(" constante ")"')
     def escritura(self, p):
+        self.semantica.generar_escritura(p.constante)
         print('Regla: escritura')
         pass
 

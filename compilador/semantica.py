@@ -114,6 +114,20 @@ class AccionesSemanticas:
         self.pila_operandos.append(operand)
         self.pila_tipos.append(ConstType(type(operand)).name)
 
+    def generar_lectura(self):
+        if self.pila_operandos:
+            valor = self.pila_operandos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('read'), '', '', valor))
+        else:
+            raise Exception("Operand stack error")
+
+    def generar_escritura(self):
+        if self.pila_operandos:
+            valor = self.pila_operandos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('write'), '', '', valor))
+        else:
+            raise Exception("Operand stack error")
+
     def iniciar_if(self):
         if self.pila_tipos and self.pila_tipos[-1] == 'bool':
             tipo = self.pila_tipos.pop()
