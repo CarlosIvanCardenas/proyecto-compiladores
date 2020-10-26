@@ -149,6 +149,27 @@ class AccionesSemanticas:
         else:
             raise Exception("Jump stack error")
 
+    def iniciar_while(self):
+        self.pila_saltos.append(len(self.lista_cuadruplos))
+
+    def expresion_while(self):
+        if self.pila_tipos and self.pila_tipos[-1] == 'bool':
+            tipo = self.pila_tipos.pop()
+            res = self.pila_operandos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('gotof'), res, '', ''))
+            self.pila_saltos.append(len(self.lista_cuadruplos) - 1)
+        else:   
+            raise Exception("Type mismatch")
+
+    def fin_while(self):
+        if len(self.pila_saltos) >= 2:
+            end = self.pila_saltos.pop()
+            ret = self.pila_saltos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('goto'), '', '', ret))
+            self.completar_salto(end, len(self.lista_cuadruplos))
+        else:
+            raise Exception("Jump stack error")
+
     def completar_salto(self, quad, salto):
         if len(self.lista_cuadruplos) > quad:
             self.lista_cuadruplos[quad].result = salto

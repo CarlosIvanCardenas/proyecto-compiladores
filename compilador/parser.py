@@ -194,16 +194,31 @@ class CompParser(SlyParser):
         print('Regla: escritura')
         pass
 
+    # CICLOS CONDICIONALES
     @_('FOR ID ASSIGN exp TO exp bloque')
     def ciclo_for(self, p):
         print('Regla: ciclo_for')
         pass
 
-    @_('WHILE "(" expresiones ")" bloque')
+    @_('inicio_while expresion_while bloque')
     def ciclo_while(self, p):
+        self.semantica.fin_while()
         print('Regla: ciclo_while')
         pass
 
+    @_('WHILE')
+    def inicio_while(self, p):
+        self.semantica.iniciar_while()
+        print('Regla: inicio_while')
+        pass
+
+    @_('"(" expresiones ")"')
+    def expresion_while(self, p):
+        self.semantica.expresion_while()
+        print('Regla: expresion_while')
+        pass
+
+    # EXPRESIONES
     @_('expresion expresiones1')
     def expresiones(self, p):
         print('Regla: expresiones')
