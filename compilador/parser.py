@@ -195,9 +195,28 @@ class CompParser(SlyParser):
         pass
 
     # CICLOS CONDICIONALES
-    @_('FOR ID ASSIGN exp TO exp bloque')
+    @_('inicio_for initial_value_for end_value_for bloque')
     def ciclo_for(self, p):
+        self.semantica.fin_for()
         print('Regla: ciclo_for')
+        pass
+
+    @_('FOR ID')
+    def inicio_for(self, p):
+        self.semantica.inicio_for(p.ID)
+        print('Regla: inicio_for')
+        pass
+
+    @_('ASSIGN exp')
+    def initial_value_for(self, p):
+        self.semantica.valor_inicial_for()
+        print('Regla: valor_inicial_for')
+        pass
+
+    @_('TO exp')
+    def end_value_for(self, p):
+        self.semantica.valor_final_for()
+        print('Regla: valor_final_for')
         pass
 
     @_('inicio_while expresion_while bloque')

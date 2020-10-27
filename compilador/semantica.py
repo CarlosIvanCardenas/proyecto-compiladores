@@ -170,6 +170,74 @@ class AccionesSemanticas:
         else:
             raise Exception("Jump stack error")
 
+    def inicio_for(self, id):
+        var = self.get_var(id)
+        if var is None:
+            raise Exception("Undeclared variable: " + id)
+        else:
+            if var.type == TipoVariable.INT or var.type == TipoVariable.FLOAT:
+                self.pila_operandos.append(var.name)
+                self.pila_tipos.append(var.type)
+            else:
+                raise Exception("Type mismatch")
+
+    def valor_inicial_for(self):
+        if self.pila_tipos and (self.pila_tipos[-1] == 'int' or self.pila_tipos[-1] == 'float'):
+            tipo_exp = self.pila_tipos.pop()
+            exp = self.pila_operandos.pop()
+            tipo_control = self.pila_tipos.pop()
+            control = self.pila_operandos.pop()
+            tipo_res = self.cubo_semantico.typematch(tipo_control, tipo_exp, '=')
+            if tipo_res == 'int' or tipo_res == 'float':
+                self.lista_cuadruplos.append(Cuadruplo(Operator('='), exp, '', control))
+                self.pila_operandos.append(control)
+                self.pila_tipos.append(tipo_res)
+            else:
+                raise Exception("Type mismatch")
+        else:   
+            raise Exception("Type mismatch")
+
+    def valor_final_for(self):
+        if self.pila_tipos and (self.pila_tipos[-1] == 'int' or self.pila_tipos[-1] == 'float'):
+            tipo_exp = self.pila_tipos.pop()
+            exp = self.pila_operandos.pop()
+            tipo_control = self.pila_tipos.pop()
+            control = self.pila_operandos.pop()
+            tipo_res = self.cubo_semantico.typematch(tipo_control, tipo_exp, '=')
+            if tipo_res == 'int' or tipo_res == 'float':
+                self.agregar_variable("final_" + control, tipo_res, [])
+                self.lista_cuadruplos.append(Cuadruplo(Operator('='), exp, '', "final_" + control))
+                temp = "temp_" + str(self.cont_temporales)  # Pedir dirección de memoria para el resultado
+                self.cont_temporales += 1
+                self.agregar_variable(temp, "bool", [])
+                self.lista_cuadruplos.append(Cuadruplo(Operator('<'), control, "final_" + control, temp))
+                self.pila_saltos.append(len(self.lista_cuadruplos) - 1)
+                self.lista_cuadruplos.append(Cuadruplo(Operator('gotof'), temp, '', ''))
+                self.pila_saltos.append(len(self.lista_cuadruplos) - 1)
+                self.pila_operandos.append(control)
+                self.pila_tipos.append(tipo_control)
+            else:
+                raise Exception("Type mismatch")
+        else:   
+            raise Exception("Type mismatch")
+
+    def fin_for(self):
+        if len(self.pila_saltos) >= 2:
+            tipo_control = self.pila_tipos.pop()
+            control = self.pila_operandos.pop()
+            temp = "temp_" + str(self.cont_temporales)  # Pedir dirección de memoria para el resultado
+            self.cont_temporales += 1
+            tipo_res = self.cubo_semantico.typematch(tipo_control, 'int', '+')
+            self.agregar_variable(temp, tipo_res, [])
+            self.lista_cuadruplos.append(Cuadruplo(Operator('+'), control, 1, temp))
+            self.lista_cuadruplos.append(Cuadruplo(Operator('='), temp, '', control))
+            end = self.pila_saltos.pop()
+            ret = self.pila_saltos.pop()
+            self.lista_cuadruplos.append(Cuadruplo(Operator('goto'), '', '', ret))
+            self.completar_salto(end, len(self.lista_cuadruplos))
+        else:
+            raise Exception("Jump stack error")
+
     def completar_salto(self, quad, salto):
         if len(self.lista_cuadruplos) > quad:
             self.lista_cuadruplos[quad].result = salto
