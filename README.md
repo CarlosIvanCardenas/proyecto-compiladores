@@ -9,4 +9,5 @@ Proyecto final de la materia "Diseño de compiladores"
 - Se añadieron **acciones semanticas** para la creación de **directorio de procedimientos** y **tabla de variables**.
 - Se añadieron **acciones semanticas** para la creación de código de **expresiones aritmeticas**.
 - Se añadieron **acciones semanticas** para la creación de código de **estatutos secuenciales**.
-- Se añadieron **acciones semanticas** para la creación de código de **estatutos condicionales**.
+- Se añadieron **acciones semanticas** para la creación de código de **estatutos condicionales de decision**.
+- Se añadieron **acciones semanticas** para la creación de código de **estatutos condicionales de ciclos**.
