@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 
 class Operator(Enum):
+    """
+    Operadores disponibles para la clase Cuadruple.
+    """
     PLUS = '+'
     MINUS = '-'
     TIMES = '*'
@@ -14,17 +17,11 @@ class Operator(Enum):
     GOTO = 'goto'
     GOTOF = 'gotof'
     GOTOT = 'gotot'
-    # Agregar los que faltan
-
-class ConstType(Enum):
-    int = int
-    float = float
-    string = str
-    char = str
+    # TODO: Agregar los que faltan
 
 @dataclass
-class Cuadruplo:
+class Quadruple:
     operator: Operator
-    left_operand: str # hay que remplazar los operandos por direcciones de memoria
-    right_operand: str
-    result: str
+    left_operand: any  # TODO: hay que remplazar los operandos por direcciones de memoria
+    right_operand: any
+    result: any

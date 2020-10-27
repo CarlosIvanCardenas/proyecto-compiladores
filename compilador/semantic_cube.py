@@ -1,5 +1,5 @@
-class CuboSemantico:
-    cubo_semantico = {
+class SemanticCube:
+    semantic_cube = {
         "int": {
             "int": {
                 "+": "int", "-": "int", "*": "int", "/": "float", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
@@ -58,5 +58,5 @@ class CuboSemantico:
         }
     }
 
-    def typematch(self, op_izq, op_der, operador):
-        return self.cubo_semantico[op_izq][op_der][operador]
+    def type_match(self, left_type, right_type, operator):
+        return self.semantic_cube[left_type][right_type][operator]

@@ -1,6 +1,6 @@
 from sly import Parser as SlyParser
 from compilador.lexer import Tokens
-from compilador.semantica import AccionesSemanticas
+from compilador.semantic import SemanticActions
 
 class CompParser(SlyParser):
     # Define starting grammar
@@ -8,7 +8,7 @@ class CompParser(SlyParser):
     # Get the token list from the lexer
     tokens = Tokens
 
-    semantica = AccionesSemanticas()
+    semantica = SemanticActions()
 
     # Grammar rules and actions
     @_('PROGRAM ID set_global vars funs main')
@@ -18,7 +18,7 @@ class CompParser(SlyParser):
     
     @_('')
     def set_global(self, p):
-        self.semantica.set_variables_globales()
+        self.semantica.set_global_scope()
         print('Regla: program')
         return 'Programa Exitoso'
 
@@ -30,7 +30,7 @@ class CompParser(SlyParser):
 
     @_('VAR ID array_dec ":" tipo')
     def var(self, p):
-        self.semantica.agregar_variable(var=p.ID, tipo=p.tipo, dims=p.array_dec)
+        self.semantica.add_var(var_name=p.ID, var_type=p.tipo, dims=p.array_dec)
         print('Regla: var')
         pass
 
@@ -48,15 +48,15 @@ class CompParser(SlyParser):
 
     @_('FUN ID "(" params ")" ":" tipo "{" estatutos return_stmt "}"')
     def fun(self, p):
-        self.semantica.set_scope_funcion(p.ID, p.tipo)
+        self.semantica.set_current_scope(p.ID, p.tipo)
         print('Regla: fun')
         pass
 
     @_('FUN ID "(" params ")" ":" VOID bloque')
     def fun_void(self, p):
-        self.semantica.set_scope_funcion(p.ID, "void")
+        self.semantica.set_current_scope(p.ID, "void")
         # Manejo de Memoria
-        self.semantica.termina_funcion()
+        self.semantica.set_global_scope()
         print('Regla: fun_void')
         pass
 
@@ -78,7 +78,7 @@ class CompParser(SlyParser):
 
     @_('ID ":" tipo param_list1')
     def param_list(self, p):
-        self.semantica.agregar_parametro(p.ID, p.tipo)
+        self.semantica.add_param(p.ID, p.tipo)
         print('Regla: param_list')
         pass
 
@@ -136,7 +136,7 @@ class CompParser(SlyParser):
     @_('ID ASSIGN expresion')
     def asignacion(self, p):
         print('Regla: asignacion')
-        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-'):
+        if self.semantica.operators_stack and (self.semantica.operators_stack[-1] == '+' or self.semantica.operators_stack[-1] == '-'):
             self.semantica.generarate_quad()
         pass
 
@@ -149,7 +149,7 @@ class CompParser(SlyParser):
 
     @_('IF "(" expresiones ")"')
     def start_if(self, p):
-        self.semantica.iniciar_if()
+        self.semantica.start_if()
         print('Regla: condicion')
         pass
 
@@ -160,7 +160,7 @@ class CompParser(SlyParser):
 
     @_('ELSE')
     def inicio_else(self, p):
-        self.semantica.iniciar_else()
+        self.semantica.start_else()
         print('Regla: condicion1')
         pass
 
@@ -197,13 +197,13 @@ class CompParser(SlyParser):
     # CICLOS CONDICIONALES
     @_('inicio_for initial_value_for end_value_for bloque')
     def ciclo_for(self, p):
-        self.semantica.fin_for()
+        self.semantica.end_for()
         print('Regla: ciclo_for')
         pass
 
     @_('FOR ID')
     def inicio_for(self, p):
-        self.semantica.inicio_for(p.ID)
+        self.semantica.start_for(p.ID)
         print('Regla: inicio_for')
         pass
 
@@ -221,13 +221,13 @@ class CompParser(SlyParser):
 
     @_('inicio_while expresion_while bloque')
     def ciclo_while(self, p):
-        self.semantica.fin_while()
+        self.semantica.end_while()
         print('Regla: ciclo_while')
         pass
 
     @_('WHILE')
     def inicio_while(self, p):
-        self.semantica.iniciar_while()
+        self.semantica.start_while()
         print('Regla: inicio_while')
         pass
 
@@ -246,7 +246,7 @@ class CompParser(SlyParser):
     @_('AND expresiones', 'OR expresiones')
     def expresiones1(self, p):
         print('Regla: expresiones1')
-        self.semantica.pila_operadores.append(p[0])
+        self.semantica.operators_stack.append(p[0])
         pass
 
     @_('empty')
@@ -262,7 +262,7 @@ class CompParser(SlyParser):
     @_('expresion2 exp')
     def expresion1(self, p):
         print('Regla: expresion1')
-        if self.semantica.pila_operadores[-1] in ['>', '<', '!=', '==']:
+        if self.semantica.operators_stack[-1] in ['>', '<', '!=', '==']:
             self.semantica.generarate_quad()
         pass
 
@@ -274,13 +274,13 @@ class CompParser(SlyParser):
     @_('GT', 'LT', 'NE', 'EQ')
     def expresion2(self, p):
         print('Regla: expresion2')
-        self.semantica.pila_operadores.append(p[0])
+        self.semantica.operators_stack.append(p[0])
         pass
 
     @_('termino exp1')
     def exp(self, p):
         print('Regla: exp')
-        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '+' or self.semantica.pila_operadores[-1] == '-'):
+        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
             self.semantica.generarate_quad()
         pass
 
@@ -292,13 +292,13 @@ class CompParser(SlyParser):
     @_('"+"', '"-"')
     def exp2(self, p):
         print('Regla: exp2')
-        self.semantica.pila_operadores.append(p[0])
+        self.semantica.operators_stack.append(p[0])
         pass
 
     @_('factor termino1')
     def termino(self, p):
         print('Regla: termino')
-        if self.semantica.pila_operadores and (self.semantica.pila_operadores[-1] == '*' or self.semantica.pila_operadores[-1] == '/'):
+        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['*', '/']:
             self.semantica.generarate_quad()
         pass
 
@@ -315,19 +315,19 @@ class CompParser(SlyParser):
     @_('"*"', '"/"')
     def termino2(self, p):
         print('Regla: termino2')
-        self.semantica.pila_operadores.append(p[0])
+        self.semantica.operators_stack.append(p[0])
         pass
 
     @_('"(" add_par exp ")"')
     def factor(self, p):
         print('Regla: factor')
-        self.semantica.pila_operadores.pop()
+        self.semantica.operators_stack.pop()
         pass
 
     @_('')
     def add_par(self, p):
         print('Regla: add_par')
-        self.semantica.pila_operadores.append(p[0])
+        self.semantica.operators_stack.append(p[0])
         pass
 
     @_('factor1 constante')
@@ -386,7 +386,7 @@ class CompParser(SlyParser):
 
     @_('')
     def empty(self, p):
-        print ('Regla: Empty')
+        print('Regla: Empty')
         pass
 
     def error(self, p):
