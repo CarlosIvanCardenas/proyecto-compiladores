@@ -94,20 +94,19 @@ class SemanticActions:
             dims=dimensions,
             size=size)
 
-    def add_param(self, param_name, param_type):
+    def add_params(self, params):
         """
         Añade parametros de funcion a la tabla actual de variables
-        :param param_name: Nombre del parametro a declarar
-        :param param_type: Tipo de dato del parametro
+        :param params: Lista de parametros a declarar. Tupla (param_name, param_type)
         """
-        param_type = VarType(param_type)
+        params.reverse()
+        for (param_name, param_type) in params:
+            self.functions_directory[self.current_scope].param_table.append((param_name, param_type))
 
-        self.functions_directory[self.current_scope].param_table.append((param_name, param_type))
-
-        self.current_var_table[param_name] = VarTableItem(
-            name=param_name,
-            type=param_type,
-            size=1)
+            self.current_var_table[param_name] = VarTableItem(
+                name=param_name,
+                type=param_type,
+                size=1)
 
     def generarate_quad(self):
         """
@@ -152,18 +151,18 @@ class SemanticActions:
     def generar_lectura(self):
         if self.operands_stack:
             value = self.operands_stack.pop()
-            self.quad_list.append(Quadruple(Operator('read'), '', '', value))
+            self.quad_list.append(Quadruple(Operator.READ, '', '', value))
         else:
             raise Exception("Operand stack error")
 
     def generar_escritura(self, value):
-        self.quad_list.append(Quadruple(Operator('write'), '', '', value))
+        self.quad_list.append(Quadruple(Operator.WRITE, '', '', value))
 
     def start_if(self):
         exp_type = self.types_stack.pop()
         if self.types_stack and exp_type == 'bool':
             res = self.operands_stack.pop()
-            self.quad_list.append(Quadruple(Operator('gotof'), res, '', ''))
+            self.quad_list.append(Quadruple(Operator.GOTOF, res, '', ''))
             self.jumps_stack.append(len(self.quad_list) - 1)
         else:   
             raise Exception("Type mismatch")
@@ -171,7 +170,7 @@ class SemanticActions:
     def start_else(self):
         tipo = self.types_stack.pop()
         res = self.operands_stack.pop()
-        self.quad_list.append(Quadruple(Operator('goto'), res, '', ''))
+        self.quad_list.append(Quadruple(Operator.GOTO, res, '', ''))
         if self.jumps_stack:
             false = self.jumps_stack.pop()
         else:
@@ -193,7 +192,7 @@ class SemanticActions:
         if self.types_stack and self.types_stack[-1] == 'bool':
             tipo = self.types_stack.pop()
             res = self.operands_stack.pop()
-            self.quad_list.append(Quadruple(Operator('gotof'), res, '', ''))
+            self.quad_list.append(Quadruple(Operator.GOTOF, res, '', ''))
             self.jumps_stack.append(len(self.quad_list) - 1)
         else:   
             raise Exception("Type mismatch")
@@ -202,7 +201,7 @@ class SemanticActions:
         if len(self.jumps_stack) >= 2:
             end = self.jumps_stack.pop()
             ret = self.jumps_stack.pop()
-            self.quad_list.append(Quadruple(Operator('goto'), '', '', ret))
+            self.quad_list.append(Quadruple(Operator.GOTO, '', '', ret))
             self.finish_jump(end, len(self.quad_list))
         else:
             raise Exception("Jump stack error")
@@ -280,3 +279,5 @@ class SemanticActions:
             self.quad_list[quad].result = jump
         else:   
             raise Exception("Quadruple error, index out of bounds")
+
+

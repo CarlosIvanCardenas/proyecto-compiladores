@@ -41,24 +41,28 @@ class CompParser(SlyParser):
         return p[0]
 
     # Declaracion de FUNCIONES
-    @_('fun funs', 'fun_void funs', 'empty')
+    @_('fun funs', 'empty')
     def funs(self, p):
         print('Regla: funs')
         pass
 
-    @_('FUN ID "(" params ")" ":" tipo "{" estatutos return_stmt "}"')
+    @_('fun_header bloque')
     def fun(self, p):
-        self.semantica.set_current_scope(p.ID, p.tipo)
         print('Regla: fun')
+        self.semantica.set_global_scope()
         pass
 
-    @_('FUN ID "(" params ")" ":" VOID bloque')
-    def fun_void(self, p):
-        self.semantica.set_current_scope(p.ID, "void")
-        # Manejo de Memoria
-        self.semantica.set_global_scope()
-        print('Regla: fun_void')
+    @_('FUN ID param_list return_type')
+    def fun_header(self, p):
+        print('Regla: fun_header')
+        self.semantica.set_current_scope(p.ID, p.return_type)
+        self.semantica.add_params(p.param_list)
         pass
+
+    @_('":" tipo', '":" VOID')
+    def return_type(self, p):
+        print('Regla: return_type')
+        return p[1]
 
     @_('RETURN "(" expresion ")"')
     def return_stmt(self, p):
@@ -66,26 +70,31 @@ class CompParser(SlyParser):
         pass
 
     # Declaracion de PARAMETROS
-    @_('param_list')
+    @_('"(" params ")"')
+    def param_list(self, p):
+        print('Regla: param_list')
+        return p.params
+
+    @_('"(" empty ")"')
+    def param_list(self, p):
+        print('Regla: param_list is empty')
+        return []
+
+    @_('ID ":" tipo params_aux')
     def params(self, p):
         print('Regla: params')
-        pass
+        p.params_aux.append((p.ID, VarType(p.tipo)))
+        return p.params_aux
+
+    @_('"," params')
+    def params_aux(self, p):
+        print('Regla: params_aux')
+        return params
 
     @_('empty')
-    def params(self, p):
-        print('Regla: params empty')
-        pass
-
-    @_('ID ":" tipo param_list1')
-    def param_list(self, p):
-        self.semantica.add_param(p.ID, p.tipo)
-        print('Regla: param_list')
-        pass
-
-    @_('"," param_list', 'empty')
-    def param_list1(self, p):
-        print('Regla: param_list1')
-        pass
+    def params_aux(self, p):
+        print('Regla: params_aux is empty')
+        return []
 
     # MAIN
     @_('MAIN "(" ")" bloque')
@@ -94,6 +103,11 @@ class CompParser(SlyParser):
         pass
 
     @_('"{" estatutos "}"')
+    def bloque(self, p):
+        print('Regla: bloque')
+        pass
+
+    @_('"{" estatutos return_stmt "}"')
     def bloque(self, p):
         print('Regla: bloque')
         pass
