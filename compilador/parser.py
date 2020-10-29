@@ -55,7 +55,7 @@ class CompParser(SlyParser):
     @_('FUN ID param_list return_type')
     def fun_header(self, p):
         print('Regla: fun_header')
-        self.semantica.set_current_scope(p.ID, p.return_type)
+        self.semantica.set_current_scope(p.ID, ReturnType(p.return_type))
         self.semantica.add_params(p.param_list)
         pass
 
@@ -127,30 +127,46 @@ class CompParser(SlyParser):
         print('Regla: estatuto')
         pass
 
-    @_('ID "(" args ")"')
+    # LLAMADA A FUNCIÓN
+    @_('ID arg_list')
     def call_fun(self, p):
         print('Regla: call_fun')
+        self.semantica.fun_call(p[0], p.arg_list)
         pass
 
-    @_('arg_list', 'empty')
-    def args(self, p):
-        print('Regla: args')
-        pass
-
-    @_('exp arg_list1')
+    # ARGUMENTOS DE LLAMADA A FUNCIÓN
+    @_('"(" args' ")")
     def arg_list(self, p):
+        print('Regla: args')
+        return p.args
+
+    @_('empty')
+    def arg_list(self, p):
+        print('Regla: args')
+        return []
+
+    @_('exp args_aux')
+    def args(self, p):
         print('Regla: arg_list')
-        pass
+        p.args_aux.append((self.semantica.operands_stack.pop(),
+                           VarType(self.semantica.types_stack.pop())))
+        return p.args_aux
 
-    @_('"," arg_list', 'empty')
-    def arg_list1(self, p):
+    @_('"," args')
+    def args_aux(self, p):
         print('Regla: arg_list1')
-        pass
+        return p.args
 
+    @_('empty')
+    def args_aux(self, p):
+        print('Regla: arg_list1')
+        return []
+
+    # ASIGNACIÓN
     @_('ID ASSIGN expresion')
     def asignacion(self, p):
         print('Regla: asignacion')
-        if self.semantica.operators_stack and (self.semantica.operators_stack[-1] == '+' or self.semantica.operators_stack[-1] == '-'):
+        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
             self.semantica.generarate_quad()
         pass
 
@@ -370,7 +386,6 @@ class CompParser(SlyParser):
     def constante(self, p):
         print('Regla: constante')
         pass
-
 
     # Operaciones con ARREGLOS
     @_('"[" CTE_I "]"')

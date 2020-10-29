@@ -17,6 +17,10 @@ class Operator(Enum):
     GOTO = 'goto'
     GOTOF = 'gotof'
     GOTOT = 'gotot'
+    GOSUB = 'gosub'
+    PARAMETER = 'parameter'
+    ENDFUN = 'endfun'
+    ERA = 'era'
     # TODO: Agregar los que faltan
 
 @dataclass

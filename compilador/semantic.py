@@ -33,16 +33,33 @@ class SemanticActions:
     jumps_stack = []
     temp_vars_index = 0
 
-    def get_var(self, v):
+    def get_var(self, var_name):
         """
         Recuperar variable del diccionario de variables globales o del scope actual.
-        :param v: Variable a buscar.
-        :return: Una instancia de la clase ElementoTablaVariables o None si no se encuentra.
+        Lanza una excepción si no se encuentra.
+
+        :param var_name: Variable a buscar.
+        :return: Una instancia de la clase VarTableItem.
         """
-        var = self.current_var_table.get(v)
+        var = self.current_var_table.get(var_name)
         if var is None:
-            var = self.global_var_table.get(v)
+            var = self.global_var_table.get(var_name)
+            if var is None:
+                raise Exception("Undeclared variable: " + var_name)
         return var
+
+    def get_fun(self, fun_name):
+        """
+        Recuperar función del diccionario de funciones.
+        Lanza una excepción si no se encuentra.
+
+        :param fun_name: Función a buscar.
+        :return: Una instancia de la clase FunctionsDirectoryItem.
+        """
+        fun = self.functions_directory.get(fun_name)
+        if fun is None:
+            raise Exception('Undeclared function: ' + fun_name)
+        return fun
 
     def set_global_scope(self):
         """
@@ -54,13 +71,14 @@ class SemanticActions:
     def set_current_scope(self, scope, return_type):
         """
         Configuracion de la tabla actual de variables a variables globales y el scope actual a global
+
         :param scope: Nombre del scope/función actual a declarar
         :param return_type: Tipo de retorno de la función
         """
         self.current_scope = scope
         self.functions_directory[scope] = FunctionsDirectoryItem(
             name=scope,
-            return_type=ReturnType(return_type),
+            return_type=return_type,
             param_table=[])
         self.current_var_table = dict()
 
@@ -74,6 +92,7 @@ class SemanticActions:
     def add_var(self, var_name, var_type, dims):
         """
         Añade variable a la tabla actual de variables
+
         :param var_name: Nombre de la variable a declarar
         :param var_type: Tipo de dato de la variable
         :param dims: Dimensiones de la variable (Si es de una dimensión, arreglo o matríz)
@@ -97,6 +116,7 @@ class SemanticActions:
     def add_params(self, params):
         """
         Añade parametros de funcion a la tabla actual de variables
+
         :param params: Lista de parametros a declarar. Tupla (param_name, param_type)
         """
         params.reverse()
@@ -131,18 +151,17 @@ class SemanticActions:
     def push_var_operand(self, operand):
         """
         Añade una variable y su tipo a las pilas para generar cuadruplos
+
         :param operand: Operando a añadir
         """
         var = self.get_var(operand)
-        if var is None:
-            raise Exception("Undeclared variable: " + operand)
-        else:
-            self.operands_stack.append(var.name)
-            self.types_stack.append(var.type)
+        self.operands_stack.append(var.name)
+        self.types_stack.append(var.type)
 
     def push_const_operand(self, operand):
         """
         Añade una constanto y su tipo a las pilas para generar cuadruplos
+
         :param operand: Operando a añadir
         """
         self.operands_stack.append(str(operand))
@@ -208,14 +227,11 @@ class SemanticActions:
 
     def start_for(self, id):
         var = self.get_var(id)
-        if var is None:
-            raise Exception("Undeclared variable: " + id)
+        if var.type == VarType.INT or var.type == VarType.FLOAT:
+            self.operands_stack.append(var.name)
+            self.types_stack.append(var.type)
         else:
-            if var.type == VarType.INT or var.type == VarType.FLOAT:
-                self.operands_stack.append(var.name)
-                self.types_stack.append(var.type)
-            else:
-                raise Exception("Type mismatch")
+            raise Exception("Type mismatch")
 
     def valor_inicial_for(self):
         if self.types_stack and (self.types_stack[-1] == 'int' or self.types_stack[-1] == 'float'):
@@ -280,4 +296,26 @@ class SemanticActions:
         else:   
             raise Exception("Quadruple error, index out of bounds")
 
+    def fun_call(self, fun_name, arg_list):
+        """
+        Genera las acciones necesarias para llamar a una función.
+        Verifica coherencia en tipos y número de argumentos.
 
+        :param fun_name: Nombre o identificador de la función a llamar.
+        :param arg_list: Lista de argumentos de la llamada a función.
+        """
+        # Verify that the function exists into the DirFunc
+        fun = self.get_fun(fun_name)
+        # Verify coherence in number of parameters
+        if len(fun.param_list) != len(arg_list):
+            raise Exception('Incorrect number of arguments in function call: ' + fun_name)
+        # TODO: Generate action ERA size
+        for param_index, ((param_name, param_type), (arg_name, arg_type)) in enumerate(zip(fun.param_list, arg_list)):
+            # Verify coherence in types
+            if param_type == arg_type:
+                self.quad_list.append(Quadruple(Operator.PARAMETER, arg_name, '', param_index))
+            else:
+                raise Exception('Type mismatch, expected: ' + param_type + " got: " + arg_type)
+
+        # Generate action GOSUB
+        self.quad_list.append(Quadruple(Operator.GOSUB, fun_name, '', ''))  # TODO: Add initial address
