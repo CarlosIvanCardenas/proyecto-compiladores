@@ -1,5 +1,5 @@
-from compilador.lexer import CompLexer
-from compilador.parser import CompParser
+from compiler.lexer import CompLexer
+from compiler.parser import CompParser
 
 def main():
     input_file = open("test_success.txt", "r")

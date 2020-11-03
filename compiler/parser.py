@@ -1,6 +1,6 @@
 from sly import Parser as SlyParser
-from compilador.lexer import Tokens
-from compilador.semantic import SemanticActions
+from compiler.lexer import Tokens
+from compiler.semantic import SemanticActions
 
 class CompParser(SlyParser):
     # Define starting grammar

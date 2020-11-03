@@ -1,6 +1,6 @@
-from compilador.semantic_cube import SemanticCube
-from compilador.symbol_table import FunctionsDirectoryItem, VarTableItem, VarType, ConstType, ReturnType
-from compilador.quadruple import Operator, Quadruple
+from compiler.semantic_cube import SemanticCube
+from compiler.symbol_table import FunctionsDirectoryItem, VarTableItem, VarType, ConstType, ReturnType
+from compiler.quadruple import Operator, Quadruple
 
 
 class SemanticActions:
@@ -21,17 +21,18 @@ class SemanticActions:
         temp_vars_index:    Contador de variables temporales.
     """
 
-    semantic_cube = SemanticCube()
-    functions_directory = dict()
-    global_var_table = dict()
-    current_var_table = dict()
-    current_scope = 'global'
-    quad_list = []
-    operands_stack = []
-    operators_stack = []
-    types_stack = []
-    jumps_stack = []
-    temp_vars_index = 0
+    def __init__(self):
+        self.semantic_cube = SemanticCube()
+        self.functions_directory = dict()
+        self.global_var_table = dict()
+        self.current_var_table = dict()
+        self.current_scope = 'global'
+        self.quad_list = []
+        self.operands_stack = []
+        self.operators_stack = []
+        self.types_stack = []
+        self.jumps_stack = []
+        self.temp_vars_index = 0
 
     def get_var(self, var_name):
         """
