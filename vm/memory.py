@@ -15,14 +15,23 @@ class AddressBlock:
         char_addr_block:    Bloque de direcciones de memoria para la partición char.
         bool_addr_block:    Bloque de direcciones de memoria para la partición bool.
     """
-    def __init__(self, start_addr, end_addr):
+    def __init__(self, start_addr, end_addr, int_size, float_size, char_size, bool_size):
         self.start_addr = start_addr
-        self.partition_size = (end_addr - start_addr + 1) // 4
+        default_size = (end_addr - start_addr + 1) // 4
 
-        self.int_addr_block = [None] * self.partition_size
-        self.float_addr_block = [None] * self.partition_size
-        self.char_addr_block = [None] * self.partition_size
-        self.bool_addr_block = [None] * self.partition_size
+        if int_size is None:
+            self.int_size = default_size
+        if float_size is None:
+            self.float_size = default_size
+        if char_size is None:
+            self.char_size = default_size
+        if bool_size is None:
+            self.bool_size = default_size
+
+        self.int_addr_block = [None] * self.int_size
+        self.float_addr_block = [None] * self.float_size
+        self.char_addr_block = [None] * self.char_size
+        self.bool_addr_block = [None] * self.bool_size
 
     def get_partition(self, addr):
         """
@@ -33,13 +42,14 @@ class AddressBlock:
         """
         # Convertir addr a una dirección de memoria relativa a la instancia actual de AddressBlock.
         rel_addr = addr - self.start_addr
-        if 0 <= rel_addr < self.partition_size:
+        if 0 <= rel_addr < self.int_size:
             return VarType.INT
-        elif self.partition_size <= rel_addr < self.partition_size * 2:
+        elif self.int_size <= rel_addr < (self.int_size + self.float_size):
             return VarType.FLOAT
-        elif self.partition_size * 2 <= rel_addr < self.partition_size * 3:
+        elif (self.int_size + self.float_size) <= rel_addr < (self.int_size + self.float_size + self.char_size):
             return VarType.CHAR
-        elif self.partition_size * 3 <= rel_addr < self.partition_size * 4:
+        elif (self.int_size + self.float_size + self.char_size) <= rel_addr < (self.int_size + self.float_size +
+                                                                               self.char_size + self.bool_size):
             return VarType.BOOL
         else:
             raise MemoryError('Address out of bounds')
@@ -54,13 +64,13 @@ class AddressBlock:
         """
         rel_addr = addr - self.start_addr
         if partition == VarType.INT:
-            return int(rel_addr - self.partition_size)
+            return int(rel_addr)
         elif partition == VarType.FLOAT:
-            return int(rel_addr - self.partition_size * 2)
+            return int(rel_addr - self.int_size)
         elif partition == VarType.CHAR:
-            return int(rel_addr - self.partition_size * 3)
+            return int(rel_addr - (self.int_size + self.float_size))
         elif partition == VarType.BOOL:
-            return int(rel_addr - self.partition_size * 4)
+            return int(rel_addr - (self.int_size + self.float_size + self.char_size))
 
     def write(self, addr, value):
         """
