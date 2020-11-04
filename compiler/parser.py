@@ -1,6 +1,8 @@
 from sly import Parser as SlyParser
 from compiler.lexer import Tokens
 from compiler.semantic import SemanticActions
+from compiler.symbol_table import ReturnType, VarType
+
 
 class CompParser(SlyParser):
     # Define starting grammar
@@ -135,7 +137,7 @@ class CompParser(SlyParser):
         pass
 
     # ARGUMENTOS DE LLAMADA A FUNCIÓN
-    @_('"(" args' ")")
+    @_('"(" args ")"')
     def arg_list(self, p):
         print('Regla: args')
         return p.args

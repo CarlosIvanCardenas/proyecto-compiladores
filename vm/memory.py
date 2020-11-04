@@ -8,8 +8,8 @@ class AddressBlock:
     Contiene métodos para leer y escribir en direcciones o bloques de memoria.
 
     Atributos:
-        start_addr:       Dirección de memoria en la cual inicia el bloque.
-        partition_size:   Tamaño por default para las 4 particiones por tipo de dato.
+        start_addr:         Dirección de memoria en la cual inicia el bloque.
+        partition_size:     Tamaño por default para las 4 particiones por tipo de dato.
         int_addr_block:     Bloque de direcciones de memoria para la partición int.
         float_addr_block:   Bloque de direcciones de memoria para la partición float.
         char_addr_block:    Bloque de direcciones de memoria para la partición char.
@@ -42,7 +42,7 @@ class AddressBlock:
         elif self.partition_size * 3 <= rel_addr < self.partition_size * 4:
             return VarType.BOOL
         else:
-            raise Exception('Address out of bounds')
+            raise MemoryError('Address out of bounds')
 
     def get_address(self, addr, partition):
         """

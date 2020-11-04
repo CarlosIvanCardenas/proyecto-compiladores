@@ -21,9 +21,9 @@ class CompLexer(SlyLexer):
     LT = r'<'
     GT = r'>'
     CTE_S = r'\".+\"'
-    CTE_I = r'\d+'
-    CTE_F = r'\d+\.\d+'
-    CTE_C = r'\'.\''
+    # CTE_I = r'\d+'
+    # CTE_F = r'\d+\.\d+'
+    # CTE_C = r'\'.\''
 
     # Identifiers and keywords
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -45,6 +45,21 @@ class CompLexer(SlyLexer):
     ID['while'] = WHILE
 
     ignore_comment = r'\#.*'
+
+    @_(r'\d+')
+    def CTE_I(self, t):
+        t.value = int(t.value)
+        return t
+
+    @_(r'\d+\.\d+')
+    def CTE_F(self, t):
+        t.value = float(t.value)
+        return t
+
+    @_(r'\'.\'')
+    def CTE_C(self, t):
+        t.value = "'" + t.value[1] + "'"
+        return t
 
     # Line number tracking
     @_(r'\n+')

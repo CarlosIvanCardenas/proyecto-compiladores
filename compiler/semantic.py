@@ -1,6 +1,7 @@
 from compiler.semantic_cube import SemanticCube
 from compiler.symbol_table import FunctionsDirectoryItem, VarTableItem, VarType, ConstType, ReturnType
 from compiler.quadruple import Operator, Quadruple
+from compiler.memory import VirtualMemoryManager
 
 
 class SemanticActions:
@@ -8,10 +9,12 @@ class SemanticActions:
     Clase para manejar las acciones de los puntos neuralgicos del parser.
 
     Atributos:
+        v_memory_manager:       Instancia de la clase VirtualMemoryManager.
         semantic_cube:          Instancia de la clase CuboSemantico.
         functions_directory:    Tabla que almacena la informacion de las funciones.
         global_var_table:       Tabla de variables globales.
         current_var_table:      Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion).
+        const_table:            Tabla que asocia las constantes con una dirección de memoria.
         current_scope:          Scope activo.
         quad_list:              Lista de cuadruplos.
         operands_stack:         Pila de operandos.
@@ -22,10 +25,12 @@ class SemanticActions:
     """
 
     def __init__(self):
+        self.v_memory_manager = VirtualMemoryManager()
         self.semantic_cube = SemanticCube()
         self.functions_directory = dict()
         self.global_var_table = dict()
         self.current_var_table = dict()
+        self.const_table = dict()
         self.current_scope = 'global'
         self.quad_list = []
         self.operands_stack = []
