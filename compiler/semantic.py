@@ -8,17 +8,17 @@ class SemanticActions:
     Clase para manejar las acciones de los puntos neuralgicos del parser.
 
     Atributos:
-        semantic_cube:     Instancia de la clase CuboSemantico.
+        semantic_cube:          Instancia de la clase CuboSemantico.
         functions_directory:    Tabla que almacena la informacion de las funciones.
-        global_var_table: Tabla de variables globales.
-        current_var_table: Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion).
-        current_scope:       Scope activo.
-        quad_list:   Lista de cuadruplos.
-        operands_stack:     Pila de operandos.
-        operators_stack:    Pila de operadores.
-        types_stack:         Pila de tipos.
-        jumps_stack:        Pila de saltos logicos en la lista de operandos.
-        temp_vars_index:    Contador de variables temporales.
+        global_var_table:       Tabla de variables globales.
+        current_var_table:      Tabla de variables activa. Cambia cuando cambia el scope (tabla global o nueva funcion).
+        current_scope:          Scope activo.
+        quad_list:              Lista de cuadruplos.
+        operands_stack:         Pila de operandos.
+        operators_stack:        Pila de operadores.
+        types_stack:            Pila de tipos.
+        jumps_stack:            Pila de saltos logicos en la lista de operandos.
+        temp_vars_index:        Contador de variables temporales.
     """
 
     def __init__(self):
