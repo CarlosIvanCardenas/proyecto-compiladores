@@ -21,34 +21,13 @@ class AddressBlock:
         self.char_addr_idx = self.float_addr_idx + partition_size
         self.bool_addr_idx = self.char_addr_idx + partition_size
 
-    def allocate_addr(self, var_type):
-        """
-        Método para asignar direcciones virtuales de memoria a una variable en una partición acorde a su tipo de dato.
-
-        :param var_type: El tipo de dato de la variable a guardar en memoria.
-        :return: Una dirección virual de memoria disponible para asignar la variable.
-        """
-        if var_type == VarType.INT:
-            address = self.int_addr_idx
-            self.int_addr_idx += 1
-        elif var_type == VarType.FLOAT:
-            address = self.float_addr_idx
-            self.float_addr_idx += 1
-        elif var_type == VarType.CHAR:
-            address = self.char_addr_idx
-            self.char_addr_idx += 1
-        else:  # VarType.BOOL
-            address = self.bool_addr_idx
-            self.bool_addr_idx += 1
-        return address
-
-    def allocate_addr_block(self, var_type, block_size):
+    def allocate_addr(self, var_type, block_size=1):
         """
         Método para asignar un bloque de direcciones virtuales de memoria a una variable en una partición acorde a su
         tipo de dato.
 
         :param var_type: El tipo de dato de la variable a guardar en memoria.
-        :param block_size: Tamaño del bloque de direcciones necesario.
+        :param block_size: Tamaño del bloque de direcciones necesario. 1 por defecto.
         :return: Una dirección virual de memoria disponible para asignar la variable.
         """
         if var_type == VarType.INT:

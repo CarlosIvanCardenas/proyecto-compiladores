@@ -83,7 +83,7 @@ class VM:
         :return: El valor asignado en la dirección "addr".
         """
         if GLOBAL_ADDRESS_RANGE[0] <= addr < GLOBAL_ADDRESS_RANGE[1]:
-            return self.global_memory.read_block(addr,size)
+            return self.global_memory.read_block(addr, size)
         elif LOCAL_ADDRESS_RANGE[0] <= addr < LOCAL_ADDRESS_RANGE[1]:
             # TODO: Get memory for current execution stack/function
             return
