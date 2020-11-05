@@ -30,6 +30,9 @@ class VM:
         self.const_memory = dict(map(lambda c: (c[1], c[0]), const_table.values()))
         self.fun_dir = fun_dir
 
+    def get_current_frame(self):
+        return self.execution_stack[len(self.execution_stack) - 1]
+
     def write(self, addr, value):
         """
         Función auxiliar para escribir un valor en una dirección de memoria.
@@ -80,7 +83,7 @@ class VM:
         :return: El valor asignado en la dirección "addr".
         """
         if GLOBAL_ADDRESS_RANGE[0] <= addr < GLOBAL_ADDRESS_RANGE[1]:
-            return self.global_memory.read_block(addr,size)
+            return self.global_memory.read_block(addr, size)
         elif LOCAL_ADDRESS_RANGE[0] <= addr < LOCAL_ADDRESS_RANGE[1]:
             # TODO: Get memory for current execution stack/function
             return
