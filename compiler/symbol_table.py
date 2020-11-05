@@ -47,6 +47,6 @@ class VarTableItem:
     name: str
     type: VarType
     size: int
+    address: int
     value: ConstType = None
     dims: (int, int) = (None, None)
-    address: int
