@@ -117,17 +117,22 @@ class SemanticActions:
             dimensions = (dims[0], dims[1])
 
         addr: int
-        if scope == 'global':
+        if self.current_scope == 'global':
             addr = self.v_memory_manager.global_addr.allocate_addr_block(var_type, size)
+            self.global_var_table[var_name] = VarTableItem(
+                name = var_name,
+                type = VarType(var_type),
+                dims = dimensions,
+                size = size,
+                address = addr)
         else:
             addr = self.v_memory_manager.local_addr.allocate_addr_block(var_type, size)
-
-        self.current_var_table[var_name] = VarTableItem(
-            name = var_name,
-            type = VarType(var_type),
-            dims = dimensions,
-            size = size,
-            address = addr)
+            self.current_var_table[var_name] = VarTableItem(
+                name = var_name,
+                type = VarType(var_type),
+                dims = dimensions,
+                size = size,
+                address = addr)
 
         return addr
 
@@ -412,7 +417,7 @@ class SemanticActions:
             self.temp_vars_index += 1
             tipo_res = self.semantic_cube.type_match(tipo_control, 'int', '+')
             temp_address = self.add_temp(temp, tipo_res)
-            self.quad_list.append(Quadruple(Operator('+'), var_control.address, 1, temp_address))
+            self.quad_list.append(Quadruple(Operator('+'), var_control.address, self.get_const(1, VarType.INT), temp_address))
             self.quad_list.append(Quadruple(Operator('='), temp_address, '', var_control.address))
             end = self.jumps_stack.pop()
             ret = self.jumps_stack.pop()
