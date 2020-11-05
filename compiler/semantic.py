@@ -119,20 +119,15 @@ class SemanticActions:
         addr: int
         if self.current_scope == 'global':
             addr = self.v_memory_manager.global_addr.allocate_addr_block(var_type, size)
-            self.global_var_table[var_name] = VarTableItem(
-                name = var_name,
-                type = VarType(var_type),
-                dims = dimensions,
-                size = size,
-                address = addr)
         else:
             addr = self.v_memory_manager.local_addr.allocate_addr_block(var_type, size)
-            self.current_var_table[var_name] = VarTableItem(
-                name = var_name,
-                type = VarType(var_type),
-                dims = dimensions,
-                size = size,
-                address = addr)
+        
+        self.current_var_table[var_name] = VarTableItem(
+            name = var_name,
+            type = VarType(var_type),
+            dims = dimensions,
+            size = size,
+            address = addr)
 
         return addr
 
