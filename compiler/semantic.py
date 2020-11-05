@@ -150,24 +150,44 @@ class SemanticActions:
 
         return addr
 
-    def add_const(self, var_name, var_type):
+    def get_const(self, const_value, const_value):
         """
-        Añade constante temporal a la tabla de constantes
+        Busca constante en tabla de constantes y si no existe la registra
 
-        :param var_name: Nombre de la variable temporal a declarar
-        :param var_type: Tipo de dato de la variable temporal
-        :return: Dirección asignada a la nueva variable temporal
+        :param const_value: Valor de la constante a registrar
+        :param const_type: Tipo de dato de la constante
+        :return: Dirección asignada a la constante
         """
-        # TODO: Terminar funcion
-        addr = self.v_memory_manager.temp_addr.allocate_addr_block(var_type, size)
+        const = self.const_table.get(str(const_value))
+        if const is None:
+            return self.add_const(const_value, const_value)
+        else:
+            return const.address
 
-        self.current_var_table[var_name] = VarTableItem(
-            name = var_name,
-            type = VarType(var_type),
-            dims = (0, 0),
-            size = 1,
-            address = addr)
+    def add_const(self, const_value, const_type):
+        """
+        Añade constante a la tabla de constantes
 
+        :param const_value: Valor de la constante a registrar
+        :param const_type: Tipo de dato de la constante
+        :return: Dirección asignada a la constante
+        """
+        if const_type == VarType.INT or const_type == VarType.FLOAT:
+            addr = self.v_memory_manager.const_addr.allocate_addr_block(const_type)
+            self.const_table[str(const_value)] = VarTableItem(
+                                                    name = str(const_value),
+                                                    type = VarType(const_type),
+                                                    dims = (0, 0),
+                                                    size = 1,
+                                                    address = addr)
+        else:
+            addr = self.v_memory_manager.const_addr.allocate_addr_block(VarType.CHAR, len(const_value))
+            self.const_table[str(const_value)] = VarTableItem(
+                                                    name = str(const_value),
+                                                    type = VarType(const_type),
+                                                    dims = (len(const_value), 0),
+                                                    size = len(const_value),
+                                                    address = addr)
         return addr
 
     def add_params(self, params):
