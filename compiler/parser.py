@@ -203,13 +203,13 @@ class CompParser(SlyParser):
 
     @_('ID')
     def id_lectura(self, p):
-        self.semantica.generar_lectura()
+        self.semantica.generar_lectura(p.ID)
         print('Regla: lectura')
         pass
 
     @_('"," ID lectura1')
     def lectura1(self, p):
-        self.semantica.generar_lectura()
+        self.semantica.generar_lectura(p.ID)
         print('Regla: lectura1')
         pass
 
@@ -308,6 +308,7 @@ class CompParser(SlyParser):
         self.semantica.operators_stack.append(p[0])
         pass
 
+    # EXP
     @_('termino exp1')
     def exp(self, p):
         print('Regla: exp')
@@ -326,6 +327,7 @@ class CompParser(SlyParser):
         self.semantica.operators_stack.append(p[0])
         pass
 
+    # TERMINO
     @_('factor termino1')
     def termino(self, p):
         print('Regla: termino')
@@ -348,7 +350,8 @@ class CompParser(SlyParser):
         print('Regla: termino2')
         self.semantica.operators_stack.append(p[0])
         pass
-
+    
+    # FACTOR
     @_('"(" add_par exp ")"')
     def factor(self, p):
         print('Regla: factor')
