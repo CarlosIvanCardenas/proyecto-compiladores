@@ -49,3 +49,4 @@ class VarTableItem:
     size: int
     value: ConstType = None
     dims: (int, int) = (None, None)
+    address: int
