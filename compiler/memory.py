@@ -23,7 +23,7 @@ class AddressBlock:
 
     def allocate_addr(self, var_type):
         """
-        Método para asignar direcciones virtuales de memoria a una variable en una partición acorde a su tipo de dato.
+        Metodo para asignar direcciones virtuales de memoria a una variable en una partición acorde a su tipo de dato.
 
         :param var_type: El tipo de dato de la variable a guardar en memoria.
         :return: Una dirección virual de memoria disponible para asignar la variable.
@@ -44,7 +44,7 @@ class AddressBlock:
 
     def allocate_addr_block(self, var_type, block_size):
         """
-        Método para asignar un bloque de direcciones virtuales de memoria a una variable en una partición acorde a su
+        Metodo para asignar un bloque de direcciones virtuales de memoria a una variable en una partición acorde a su
         tipo de dato.
 
         :param var_type: El tipo de dato de la variable a guardar en memoria.

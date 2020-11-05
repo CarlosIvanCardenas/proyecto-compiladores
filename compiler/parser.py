@@ -3,7 +3,6 @@ from compiler.lexer import Tokens
 from compiler.semantic import SemanticActions
 from compiler.symbol_table import ReturnType, VarType
 
-
 class CompParser(SlyParser):
     # Define starting grammar
     start = 'program'

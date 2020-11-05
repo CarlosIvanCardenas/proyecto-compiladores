@@ -73,6 +73,7 @@ class SemanticActions:
         """
         self.current_var_table = self.global_var_table
         self.current_scope = 'global'
+        self.v_memory_manager.clear_mem()
 
     def set_current_scope(self, scope, return_type):
         """
@@ -113,15 +114,23 @@ class SemanticActions:
             size = dims[0] * dims[1]
             dimensions = (dims[0], dims[1])
 
+        addr: int
+        if scope == 'global':
+            addr = self.v_memory_manager.global_addr.allocate_addr_block(var_type, size)
+        else:
+            addr = self.v_memory_manager.local_addr.allocate_addr_block(var_type, size)
+
         self.current_var_table[var_name] = VarTableItem(
-            name=var_name,
-            type=VarType(var_type),
-            dims=dimensions,
-            size=size)
+            name = var_name,
+            type = VarType(var_type),
+            dims = dimensions,
+            size = size,
+            address = addr)
 
     def add_params(self, params):
         """
-        Añade parametros de funcion a la tabla actual de variables
+        Añade parametros de funcion a la tabla actual de variables. 
+        (Los parametros no pueden ser arreglos ni matrices)
 
         :param params: Lista de parametros a declarar. Tupla (param_name, param_type)
         """
@@ -132,7 +141,9 @@ class SemanticActions:
             self.current_var_table[param_name] = VarTableItem(
                 name=param_name,
                 type=param_type,
-                size=1)
+                dims = (0, 0),
+                size=1,
+                address = self.v_memory_manager.local_addr.allocate_addr_block(param_type, 1))
 
     def generarate_quad(self):
         """
