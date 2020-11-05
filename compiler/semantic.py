@@ -104,7 +104,6 @@ class SemanticActions:
         :param var_name: Nombre de la variable a declarar
         :param var_type: Tipo de dato de la variable
         :param dims: Dimensiones de la variable (Si es de una dimensión, arreglo o matríz)
-        :return: Dirección asignada a la nueva variable
         """
         if len(dims) == 0:
             size = 1
@@ -128,8 +127,6 @@ class SemanticActions:
             dims = dimensions,
             size = size,
             address = addr)
-
-        return addr
 
     def add_temp(self, var_name, var_type):
         """
