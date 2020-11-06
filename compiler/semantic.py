@@ -262,7 +262,7 @@ class SemanticActions:
         :param operand: Operando a añadir
         """
         self.get_const(const_value, const_type)
-        self.operands_stack.append(str(operand))
+        self.operands_stack.append(str(const_value))
 
     def generar_lectura(self, var_name):
         """
@@ -280,16 +280,8 @@ class SemanticActions:
         addr: int
         if self.operands_stack:
             var_name = self.operands_stack.pop()
-            var = self.current_var_table.get(var_name)
-            if var is None:
-                var = self.global_var_table.get(var_name)
-                if var is None:
-                    addr = self.get_const(var_name, var_type)
-                else:
-                    addr = var.address
-            else:
-                addr = var.address
-            self.quad_list.append(Quadruple(Operator.WRITE, '', '', addr))
+            var = self.get_var(var_name)
+            self.quad_list.append(Quadruple(Operator.WRITE, '', '', var.address))
         else:
             raise Exception("Operation stack error")
 
@@ -451,14 +443,14 @@ class SemanticActions:
         else:
             raise Exception("Quadruple error, index out of bounds")
 
-    def set_jump_main():
+    def set_jump_main(self):
         """
         Genera quad de salto a main al inicio del programa
         """
         self.quad_list.append(Quadruple(Operator('goto'), '', '', ''))
         self.jumps_stack.append(len(self.quad_list) - 1)
 
-    def complete_main_jump():
+    def complete_main_jump(self):
         """
         Completa quad de salto a main
         """
