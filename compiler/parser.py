@@ -276,6 +276,8 @@ class CompParser(SlyParser):
     @_('expresion expresiones1')
     def expresiones(self, p):
         print('Regla: expresiones')
+        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['&&', '||']:
+            self.semantica.generarate_quad()
         pass
 
     @_('AND expresiones', 'OR expresiones')
@@ -289,6 +291,7 @@ class CompParser(SlyParser):
         print('Regla: expresiones1')
         pass
 
+    # EXPRESION
     @_('exp expresion1')
     def expresion(self, p):
         print('Regla: expresion')
@@ -356,28 +359,24 @@ class CompParser(SlyParser):
         pass
     
     # FACTOR
-    @_('"(" add_par exp ")"')
+    @_('add_par exp ")"')
     def factor(self, p):
         print('Regla: factor')
         self.semantica.operators_stack.pop()
         pass
 
-    @_('')
+    @_('"("')
     def add_par(self, p):
         print('Regla: add_par')
         self.semantica.operators_stack.append(p[0])
         pass
 
-    @_('factor1 constante')
+    @_('constante')
     def factor(self, p):
         print('Regla: factor')
         pass
 
-    @_('"-"', 'empty')
-    def factor1(self, p):
-        print('Regla: factor1')
-        pass
-
+    # CONSTANTE
     @_('ID')
     def constante(self, p):
         self.semantica.push_var_operand(p[0])
