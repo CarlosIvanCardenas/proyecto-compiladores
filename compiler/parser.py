@@ -183,7 +183,7 @@ class CompParser(SlyParser):
     def asignacion(self, p):
         print('Regla: asignacion')
         if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
-            self.semantica.generarate_quad()
+            self.semantica.generate_quad()
         pass
 
     # ESTATUTOS CONDICIONALES
@@ -288,7 +288,7 @@ class CompParser(SlyParser):
     def expresiones(self, p):
         print('Regla: expresiones')
         if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['&&', '||']:
-            self.semantica.generarate_quad()
+            self.semantica.generate_quad()
         pass
 
     @_('AND expresiones', 'OR expresiones')
@@ -312,7 +312,7 @@ class CompParser(SlyParser):
     def expresion1(self, p):
         print('Regla: expresion1')
         if self.semantica.operators_stack[-1] in ['>', '<', '!=', '==']:
-            self.semantica.generarate_quad()
+            self.semantica.generate_quad()
         pass
 
     @_('empty')
@@ -331,7 +331,7 @@ class CompParser(SlyParser):
     def exp(self, p):
         print('Regla: exp')
         if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
-            self.semantica.generarate_quad()
+            self.semantica.generate_quad()
         pass
 
     @_('exp2 exp', 'empty')
@@ -350,7 +350,7 @@ class CompParser(SlyParser):
     def termino(self, p):
         print('Regla: termino')
         if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['*', '/']:
-            self.semantica.generarate_quad()
+            self.semantica.generate_quad()
         pass
 
     @_('termino2 termino')

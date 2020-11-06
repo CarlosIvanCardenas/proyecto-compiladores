@@ -226,7 +226,7 @@ class SemanticActions:
                 size=1,
                 address=addr)
 
-    def generarate_quad(self):
+    def generate_quad(self):
         """
         Función para generar un cuadruplo utilizando las pilas de operadores, operandos y tipos
         """
