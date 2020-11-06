@@ -444,6 +444,23 @@ class SemanticActions:
         else:
             raise Exception("Quadruple error, index out of bounds")
 
+    def set_jump_main():
+        """
+        Genera quad de salto a main al inicio del programa
+        """
+        self.quad_list.append(Quadruple(Operator('goto'), '', '', ''))
+        self.jumps_stack.append(len(self.quad_list) - 1)
+
+    def complete_main_jump():
+        """
+        Completa quad de salto a main
+        """
+        if self.jumps_stack:
+            main = self.jumps_stack.pop()
+            self.finish_jump(main, len(self.quad_list))
+        else:
+            raise Exception("Jump stack error")
+
     def fun_call(self, fun_name, arg_list):
         """
         Genera las acciones necesarias para llamar a una función.

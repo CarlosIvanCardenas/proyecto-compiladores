@@ -12,16 +12,20 @@ class CompParser(SlyParser):
     semantica = SemanticActions()
 
     # Grammar rules and actions
-    @_('PROGRAM ID set_global vars funs main')
+    @_('jump_main PROGRAM ID set_global vars funs main')
     def program(self, p):
         print('Regla: program')
         return 'Programa Exitoso'
     
     @_('')
+    def jump_main(self, p):
+        print('Regla: jump_main')
+        self.semantica.set_jump_main()
+    
+    @_('')
     def set_global(self, p):
         self.semantica.set_global_scope()
         print('Regla: program')
-        return 'Programa Exitoso'
 
     # Declaracion de VARIABLES GLOBALES
     @_('var vars', 'empty')
@@ -103,11 +107,18 @@ class CompParser(SlyParser):
         return []
 
     # MAIN
-    @_('MAIN "(" ")" bloque')
+    @_('start_main bloque')
     def main(self, p):
         print('Regla: main')
         pass
 
+    @_('MAIN "(" ")"')
+    def start_main(self, p):
+        self.semantica.complete_main_jump()
+        print('Regla: start_main')
+        pass
+
+    # BLOQUE
     @_('"{" estatutos "}"')
     def bloque(self, p):
         print('Regla: bloque')
