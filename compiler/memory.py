@@ -15,7 +15,8 @@ class AddressBlock:
     """
 
     def __init__(self, start_addr, end_addr):
-        partition_size = (end_addr - start_addr + 1) // 4
+        self.start_addr = start_addr
+        self.partition_size = (end_addr - start_addr + 1) // 4
         self.int_addr_idx = start_addr
         self.float_addr_idx = start_addr + partition_size
         self.char_addr_idx = self.float_addr_idx + partition_size
@@ -43,6 +44,18 @@ class AddressBlock:
             address = self.bool_addr_idx
             self.bool_addr_idx += block_size
         return address
+
+    def get_partition_sizes(self):
+        """
+        Regresa los tamaños de las particiones de memoria por tipo de dato.
+
+        :return: Un arreglo con los tamaños de las 4 particiones en orden: [int, float, char, bool]
+        """
+        int_size = self.int_addr_idx - self.start_addr
+        float_size = self.float_addr_idx - (self.start_addr + self.partition_size)
+        char_size = self.char_addr_idx - (self.start_addr + self.partition_size * 2)
+        bool_size = self.bool_addr_idx - (self.start_addr + self.partition_size * 3)
+        return [int_size, float_size, char_size, bool_size]
 
 class VirtualMemoryManager:
     """

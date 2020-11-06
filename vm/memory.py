@@ -15,7 +15,7 @@ class AddressBlock:
         char_addr_block:    Bloque de direcciones de memoria para la partición char.
         bool_addr_block:    Bloque de direcciones de memoria para la partición bool.
     """
-    def __init__(self, start_addr, end_addr, int_size, float_size, char_size, bool_size):
+    def __init__(self, start_addr, end_addr, int_size=None, float_size=None, char_size=None, bool_size=None):
         self.start_addr = start_addr
         default_size = (end_addr - start_addr + 1) // 4
 
