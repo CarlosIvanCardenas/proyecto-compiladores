@@ -26,6 +26,6 @@ class Operator(Enum):
 @dataclass
 class Quadruple:
     operator: Operator
-    left_operand: any  # TODO: hay que remplazar los operandos por direcciones de memoria
+    left_operand: any
     right_operand: any
     result: any

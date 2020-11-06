@@ -380,10 +380,22 @@ class CompParser(SlyParser):
         print('Regla: constante')
         pass
 
-    @_('CTE_I', 'CTE_F', 'CTE_S', 'CTE_C')
+    @_('CTE_I')
     def constante(self, p):
         print('Regla: constante')
-        self.semantica.push_const_operand(p[0])
+        self.semantica.push_const_operand(p[0], VarType.INT)
+        pass
+
+    @_('CTE_F')
+    def constante(self, p):
+        print('Regla: constante')
+        self.semantica.push_const_operand(p[0], VarType.FLOAT)
+        pass
+
+    @_('CTE_S', 'CTE_C')
+    def constante(self, p):
+        print('Regla: constante')
+        self.semantica.push_const_operand(p[0], VarType.CHAR)
         pass
 
     @_('array_usage')

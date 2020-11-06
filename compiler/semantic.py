@@ -147,7 +147,7 @@ class SemanticActions:
 
         return addr
 
-    def get_const(self, const_value, const_value):
+    def get_const(self, const_value, const_type):
         """
         Busca constante en tabla de constantes y si no existe la registra
 
@@ -157,7 +157,7 @@ class SemanticActions:
         """
         const = self.const_table.get(str(const_value))
         if const is None:
-            return self.add_const(const_value, const_value)
+            return self.add_const(const_value, const_type)
         else:
             return const.address
 
@@ -238,14 +238,15 @@ class SemanticActions:
         self.operands_stack.append(var.name)
         self.types_stack.append(var.type) # TODO: Still necessary?
 
-    def push_const_operand(self, operand):
+    def push_const_operand(self, const_value, const_type):
         """
         Añade una constanto y su tipo a las pilas para generar cuadruplos
 
         :param operand: Operando a añadir
         """
+        self.get_const(const_value, const_type)
         self.operands_stack.append(str(operand))
-        self.types_stack.append(ConstType(type(operand)).name)
+        self.types_stack.append(const_type) # TODO: Still necessary?
 
     def generar_lectura(self, var_name):
         """
@@ -260,10 +261,24 @@ class SemanticActions:
         """
         Genera cuadruplo con operando de write y el valor a escribir
 
-        :value: Constante que se va a escribir
+        :value: Constante o variable que se va a escribir
         """
-        self.quad_list.append(Quadruple(Operator.WRITE, '', '', value))
-        # TODO: Terminar funcion
+        addr: int
+        if self.operands_stack and self.types_stack:
+            var_name = self.operands_stack.pop()
+            var_type = self.types_stack.pop()
+            var = self.current_var_table.get(var_name)
+            if var is None:
+                var = self.global_var_table.get(var_name)
+                if var is None:
+                    addr = self.get_const(var_name, var_type)
+                else:
+                    addr = var.address
+            else:
+                addr = var.address
+            self.quad_list.append(Quadruple(Operator.WRITE, '', '', addr))
+        else:
+            raise Exception("Operation stack error")
 
     def start_if(self):
         """
@@ -379,7 +394,7 @@ class SemanticActions:
             tipo_control = self.types_stack.pop() # TODO: Still necessary?
             control = self.operands_stack.pop()
             var_control = self.get_var(control)
-            if tipo_exp == 'int' or tipo_exp == 'float':
+            if tipo_control == 'int' or tipo_control == 'float':
                 final = "_final_" + control
                 final_address = self.add_temp(final, tipo_exp)
                 self.quad_list.append(Quadruple(Operator('='), var_exp.address, '', final_address))
