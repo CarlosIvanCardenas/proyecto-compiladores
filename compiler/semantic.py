@@ -266,16 +266,13 @@ class SemanticActions:
         var = self.get_var(var_name)
         self.quad_list.append(Quadruple(Operator.READ, '', '', var.address))
 
-    def generar_escritura(self, value):
+    def generar_escritura(self):
         """
         Genera cuadruplo con operando de write y el valor a escribir
-
-        :value: Constante o variable que se va a escribir
         """
         addr: int
-        if self.operands_stack and self.types_stack:
+        if self.operands_stack:
             var_name = self.operands_stack.pop()
-            var_type = self.types_stack.pop()
             var = self.current_var_table.get(var_name)
             if var is None:
                 var = self.global_var_table.get(var_name)

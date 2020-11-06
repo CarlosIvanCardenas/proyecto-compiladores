@@ -225,7 +225,7 @@ class CompParser(SlyParser):
     # ESCRITURA
     @_('WRITE "(" constante ")"')
     def escritura(self, p):
-        self.semantica.generar_escritura(p.constante)
+        self.semantica.generar_escritura()
         print('Regla: escritura')
         pass
 
