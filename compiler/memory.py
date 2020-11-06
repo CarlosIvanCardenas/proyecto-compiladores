@@ -8,19 +8,27 @@ class AddressBlock:
     para el lenguaje.
 
     Atributos:
-        int_addr_idx:     Indice de direcciones de memoria para la partición int.
-        float_addr_idx:   Indice de direcciones de memoria para la partición float.
-        char_addr_idx:    Indice de direcciones de memoria para la partición char.
-        bool_addr_idx:    Indice de direcciones de memoria para la partición bool.
+        int_addr:           Direccion inicial de memoria para la partición int.
+        float_addr:         Direccion inicial de memoria para la partición float.
+        char_addr:          Direccion inicial de memoria para la partición char.
+        bool_addr:          Direccion inicial de memoria para la partición bool.
+        int_addr_idx:       Indice de direcciones de memoria para la partición int.
+        float_addr_idx:     Indice de direcciones de memoria para la partición float.
+        char_addr_idx:      Indice de direcciones de memoria para la partición char.
+        bool_addr_idx:      Indice de direcciones de memoria para la partición bool.
     """
 
     def __init__(self, start_addr, end_addr):
         self.start_addr = start_addr
         self.partition_size = (end_addr - start_addr + 1) // 4
-        self.int_addr_idx = start_addr
-        self.float_addr_idx = start_addr + partition_size
-        self.char_addr_idx = self.float_addr_idx + partition_size
-        self.bool_addr_idx = self.char_addr_idx + partition_size
+        self.int_addr = start_addr
+        self.float_addr = start_addr + self.partition_size
+        self.char_addr = self.float_addr + self.partition_size
+        self.bool_addr = self.char_addr + self.partition_size
+        self.int_addr_idx = self.int_addr
+        self.float_addr_idx = self.float_addr
+        self.char_addr_idx = self.char_addr
+        self.bool_addr_idx = self.bool_addr
 
     def allocate_addr(self, var_type, block_size=1):
         """
@@ -32,17 +40,29 @@ class AddressBlock:
         :return: Una dirección virual de memoria disponible para asignar la variable.
         """
         if var_type == VarType.INT:
-            address = self.int_addr_idx
-            self.int_addr_idx += block_size
+            if self.int_addr_idx < self.float_addr:
+                address = self.int_addr_idx
+                self.int_addr_idx += block_size
+            else:
+                raise Exception('Int memory block overflow')
         elif var_type == VarType.FLOAT:
-            address = self.float_addr_idx
-            self.float_addr_idx += block_size
+            if self.float_addr_idx < self.char_addr:
+                address = self.float_addr_idx
+                self.float_addr_idx += block_size
+            else:
+                raise Exception('Float memory block overflow')
         elif var_type == VarType.CHAR:
-            address = self.char_addr_idx
-            self.char_addr_idx += block_size
+            if self.char_addr_idx < self.bool_addr:
+                address = self.char_addr_idx
+                self.char_addr_idx += block_size
+            else:
+                raise Exception('Char memory block overflow')
         else:  # VarType.BOOL
-            address = self.bool_addr_idx
-            self.bool_addr_idx += block_size
+            if self.bool_addr_idx < self.bool_addr + self.partition_size:
+                address = self.bool_addr_idx
+                self.bool_addr_idx += block_size
+            else:
+                raise Exception('Bool memory block overflow')
         return address
 
     def get_partition_sizes(self):
