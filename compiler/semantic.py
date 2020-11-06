@@ -49,7 +49,11 @@ class SemanticActions:
         if var is None:
             var = self.global_var_table.get(var_name)
             if var is None:
-                raise Exception("Undeclared variable: " + var_name)
+                var = self.current_var_table.get('_const_' + var_name)
+                if var is None:
+                    var = self.global_var_table.get('_const_' + var_name)
+                    if var is None:
+                        raise Exception("Undeclared variable: " + var_name)
         return var
 
     def get_fun(self, fun_name):
@@ -185,7 +189,7 @@ class SemanticActions:
         """
         if const_type == VarType.INT or const_type == VarType.FLOAT:
             addr = self.v_memory_manager.const_addr.allocate_addr(const_type)
-            self.const_table[str(const_value)] = VarTableItem(
+            var = VarTableItem(
                 name=str(const_value),
                 type=VarType(const_type),
                 dims=(0, 0),
@@ -193,12 +197,15 @@ class SemanticActions:
                 address=addr)
         else:
             addr = self.v_memory_manager.const_addr.allocate_addr(VarType.CHAR, len(const_value))
-            self.const_table[str(const_value)] = VarTableItem(
+            var = VarTableItem(
                 name=str(const_value),
                 type=VarType(const_type),
                 dims=(len(const_value), 0),
                 size=len(const_value),
                 address=addr)
+
+        self.const_table[str(const_value)] = var
+        self.current_var_table['_const_' + str(const_value)] = var
         return addr
 
     def add_params(self, params):
