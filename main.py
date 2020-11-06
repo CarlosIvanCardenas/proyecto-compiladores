@@ -2,7 +2,7 @@ from compiler.lexer import CompLexer
 from compiler.parser import CompParser
 
 def main():
-    input_file = open("test_success.txt", "r")
+    input_file = open("examples/fun_declaration_and_call", "r")
     input_text = input_file.read()
     print(input_text)
 

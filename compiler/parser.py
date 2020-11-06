@@ -179,7 +179,7 @@ class CompParser(SlyParser):
         return []
 
     # ASIGNACIÓN
-    @_('ID ASSIGN expresion')
+    @_('ID ASSIGN expresion', 'ID ASSIGN call_fun')
     def asignacion(self, p):
         print('Regla: asignacion')
         if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:

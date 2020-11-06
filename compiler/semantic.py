@@ -101,7 +101,7 @@ class SemanticActions:
         """
         Metodo para añadir el indice del cuadruplo equivalente a la primera instrucción de una función.
         """
-        fun = get_fun(self.current_scope)
+        fun = self.get_fun(self.current_scope)
         fun.start_addr = len(self.quad_list)
 
     def end_fun(self):
