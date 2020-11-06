@@ -36,7 +36,9 @@ class FunctionsDirectoryItem:
     """
     name: str
     return_type: ReturnType
-    param_table: list
+    param_table: list = None
+    start_addr: int = None
+    partition_sizes: [int, int, int, int] = None
 
 @dataclass
 class VarTableItem:

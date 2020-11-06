@@ -47,10 +47,10 @@ class CompParser(SlyParser):
         print('Regla: funs')
         pass
 
-    @_('fun_header bloque')
+    @_('fun_header set_start_addr bloque')
     def fun(self, p):
         print('Regla: fun')
-        self.semantica.set_global_scope()
+        self.semantica.end_fun()
         pass
 
     @_('FUN ID param_list return_type')
@@ -58,6 +58,11 @@ class CompParser(SlyParser):
         print('Regla: fun_header')
         self.semantica.set_current_scope(p.ID, ReturnType(p.return_type))
         self.semantica.add_params(p.param_list)
+        pass
+
+    @_('')
+    def set_start_addr(self, p):
+        self.semantica.set_fun_start_addr()
         pass
 
     @_('":" tipo', '":" VOID')
@@ -149,8 +154,7 @@ class CompParser(SlyParser):
     @_('exp args_aux')
     def args(self, p):
         print('Regla: arg_list')
-        p.args_aux.append((self.semantica.operands_stack.pop(),
-                           VarType(self.semantica.types_stack.pop())))
+        p.args_aux.append((self.semantica.operands_stack.pop()))
         return p.args_aux
 
     @_('"," args')
