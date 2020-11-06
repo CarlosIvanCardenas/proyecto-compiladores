@@ -236,7 +236,7 @@ class SemanticActions:
             operator = Operator(self.operators_stack.pop())
             result_type = self.semantic_cube.type_match(left_operand.type, right_operand.type, operator)
             if result_type != "error":
-                result_id = "temp_" + str(self.temp_vars_index)
+                result_id = "_temp_" + str(self.temp_vars_index)
                 result_addr = self.add_temp(result_id, result_type)
                 self.temp_vars_index += 1
                 self.quad_list.append(Quadruple(operator, left_operand.address, right_operand.address, result_addr))
@@ -404,7 +404,7 @@ class SemanticActions:
                     final = "_final_" + control.name
                     final_address = self.add_temp(final, exp.type)
                     self.quad_list.append(Quadruple(Operator('='), exp.address, '', final_address))
-                    temp = "temp_" + str(self.temp_vars_index)
+                    temp = "_temp_" + str(self.temp_vars_index)
                     self.temp_vars_index += 1
                     temp_address = self.add_temp(temp, "bool")
                     self.quad_list.append(Quadruple(Operator('<'), control.address, final_address, temp_address))
@@ -425,7 +425,7 @@ class SemanticActions:
         """
         if len(self.jumps_stack) >= 2 and self.operands_stack:
             control = self.get_var(self.operands_stack.pop())
-            temp = "temp_" + str(self.temp_vars_index)  # Pedir dirección de memoria para el resultado
+            temp = "_temp_" + str(self.temp_vars_index)  # Pedir dirección de memoria para el resultado
             self.temp_vars_index += 1
             tipo_res = self.semantic_cube.type_match(control.type, 'int', '+')
             temp_address = self.add_temp(temp, tipo_res)
