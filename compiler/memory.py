@@ -72,9 +72,9 @@ class AddressBlock:
         :return: Un arreglo con los tamaños de las 4 particiones en orden: [int, float, char, bool]
         """
         int_size = self.int_addr_idx - self.start_addr
-        float_size = self.float_addr_idx - (self.start_addr + self.partition_size)
-        char_size = self.char_addr_idx - (self.start_addr + self.partition_size * 2)
-        bool_size = self.bool_addr_idx - (self.start_addr + self.partition_size * 3)
+        float_size = self.float_addr_idx - self.float_addr
+        char_size = self.char_addr_idx - self.char_addr
+        bool_size = self.bool_addr_idx - self.bool_addr
         return [int_size, float_size, char_size, bool_size]
 
 class VirtualMemoryManager:
