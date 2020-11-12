@@ -112,8 +112,8 @@ class SemanticActions:
         # Save partition sizes for ERA instruction.
         fun = get_fun(self.current_scope)
         fun.partition_sizes = self.v_memory_manager.local_addr.get_partition_sizes()
-
         self.quad_list.append(Quadruple(Operator.ENDFUN, '', '', ''))
+        self.set_global_scope()
 
     def add_var(self, var_name, var_type, dims):
         """
@@ -241,6 +241,23 @@ class SemanticActions:
                 self.temp_vars_index += 1
                 self.quad_list.append(Quadruple(operator, left_operand.address, right_operand.address, result_addr))
                 self.operands_stack.append(result)
+            else:
+                raise Exception("Type mismatch")
+        else:
+            raise Exception("Operation stack error")
+
+    def generate_quad_assign(self, name_var):
+        """
+        Función para generar un cuadruplo de asignación utilizando la pila de operandos
+
+        :param name_var: nombre de la variable donde se va a asignar el valor
+        """
+        if self.operands_stack:
+            right_operand = self.get_var(name_var)
+            left_operand = self.get_var(self.operands_stack.pop())
+            result_type = self.semantic_cube.type_match(left_operand.type, right_operand.type, Operator.ASSIGN)
+            if result_type != "error":
+                self.quad_list.append(Quadruple(Operator.ASSIGN, right_operand.address, '', left_operand.address))
             else:
                 raise Exception("Type mismatch")
         else:

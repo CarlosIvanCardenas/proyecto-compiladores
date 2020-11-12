@@ -51,6 +51,7 @@ class CompParser(SlyParser):
         print('Regla: funs')
         pass
 
+    # FUNCION
     @_('fun_header set_start_addr bloque')
     def fun(self, p):
         print('Regla: fun')
@@ -182,8 +183,7 @@ class CompParser(SlyParser):
     @_('ID ASSIGN expresion', 'ID ASSIGN call_fun')
     def asignacion(self, p):
         print('Regla: asignacion')
-        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
-            self.semantica.generate_quad()
+        self.semantica.generate_quad_assign(p.ID)
         pass
 
     # ESTATUTOS CONDICIONALES
@@ -241,6 +241,7 @@ class CompParser(SlyParser):
         pass
 
     # CICLOS CONDICIONALES
+    #FOR
     @_('inicio_for initial_value_for end_value_for bloque')
     def ciclo_for(self, p):
         self.semantica.end_for()
@@ -265,6 +266,7 @@ class CompParser(SlyParser):
         print('Regla: valor_final_for')
         pass
 
+    # WHILE
     @_('inicio_while expresion_while bloque')
     def ciclo_while(self, p):
         self.semantica.end_while()
