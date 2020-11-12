@@ -46,14 +46,14 @@ class CompLexer(SlyLexer):
 
     ignore_comment = r'\#.*'
 
-    @_(r'\d+')
-    def CTE_I(self, t):
-        t.value = int(t.value)
-        return t
-
     @_(r'\d+\.\d+')
     def CTE_F(self, t):
         t.value = float(t.value)
+        return t
+
+    @_(r'\d+')
+    def CTE_I(self, t):
+        t.value = int(t.value)
         return t
 
     @_(r'\'.\'')
