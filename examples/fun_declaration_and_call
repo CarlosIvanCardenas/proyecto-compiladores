@@ -4,6 +4,11 @@ var int_variable: int
 var float_variable: float
 var char_variable: char
 
+fun void_function(): void {
+    var tmp: int
+    tmp = 5
+}
+
 fun int_function(): int {
     var tmp: int
     tmp = 5
@@ -36,6 +41,9 @@ main() {
     write(int_variable)
     write(float_variable)
     write(char_variable)
+
+    # Test void function.
+    void_function()
 
     # Test function with parameters.
     int_variable = sum(2, 4)
