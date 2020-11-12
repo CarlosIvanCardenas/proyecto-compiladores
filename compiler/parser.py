@@ -14,7 +14,7 @@ class CompParser(SlyParser):
     # Grammar rules and actions
     @_('jump_main PROGRAM ID set_global vars funs main')
     def program(self, p):
-        print('Regla: program')
+        print('Regla: program' + p.ID)
         return 'Programa Exitoso'
     
     @_('')
@@ -25,7 +25,7 @@ class CompParser(SlyParser):
     @_('')
     def set_global(self, p):
         self.semantica.set_global_scope()
-        print('Regla: program')
+        print('Regla: set_global')
 
     # Declaracion de VARIABLES GLOBALES
     @_('var vars', 'empty')
@@ -36,23 +36,23 @@ class CompParser(SlyParser):
     @_('VAR ID array_dec ":" tipo')
     def var(self, p):
         self.semantica.add_var(var_name=p.ID, var_type=p.tipo, dims=p.array_dec)
-        print('Regla: var')
+        print('Regla: var con ' + p.ID)
         pass
 
     # TIPO de variables
     @_('INT', 'FLOAT', 'CHAR')
     def tipo(self, p):
-        print('Regla: tipo')
+        print('Regla: tipo ' + p[0])
         return p[0]
 
     # Declaracion de FUNCIONES
-    @_('fun funs', 'empty')
+    @_('fun funs', 'fun_void funs', 'empty')
     def funs(self, p):
         print('Regla: funs')
         pass
 
     # FUNCION
-    @_('fun_header set_start_addr bloque')
+    @_('fun_header set_start_addr bloque_return')
     def fun(self, p):
         print('Regla: fun')
         self.semantica.end_fun()
@@ -60,8 +60,21 @@ class CompParser(SlyParser):
 
     @_('FUN ID param_list return_type')
     def fun_header(self, p):
-        print('Regla: fun_header')
+        print('Regla: fun_header ' + p.ID)
         self.semantica.set_current_scope(p.ID, ReturnType(p.return_type))
+        self.semantica.add_params(p.param_list)
+        pass
+
+    @_('fun_header_void set_start_addr bloque')
+    def fun_void(self, p):
+        print('Regla: fun')
+        self.semantica.end_fun()
+        pass
+
+    @_('FUN ID param_list ":" VOID')
+    def fun_header_void(self, p):
+        print('Regla: fun_header ' + p.ID)
+        self.semantica.set_current_scope(p.ID, ReturnType("void"))
         self.semantica.add_params(p.param_list)
         pass
 
@@ -70,7 +83,7 @@ class CompParser(SlyParser):
         self.semantica.set_fun_start_addr()
         pass
 
-    @_('":" tipo', '":" VOID')
+    @_('":" tipo')
     def return_type(self, p):
         print('Regla: return_type')
         return p[1]
@@ -126,8 +139,8 @@ class CompParser(SlyParser):
         pass
 
     @_('"{" estatutos return_stmt "}"')
-    def bloque(self, p):
-        print('Regla: bloque')
+    def bloque_return(self, p):
+        print('Regla: bloque_return')
         pass
 
     @_('estatuto estatutos1')
@@ -393,33 +406,34 @@ class CompParser(SlyParser):
     @_('ID')
     def constante(self, p):
         self.semantica.push_var_operand(p[0])
-        print('Regla: constante')
+        print('Regla: constante ' + p[0])
         pass
 
     @_('CTE_I')
     def constante(self, p):
-        print('Regla: constante')
+        print('Regla: constante int ' + str(p[0]))
         self.semantica.push_const_operand(p[0], VarType.INT)
         pass
 
     @_('CTE_F')
     def constante(self, p):
-        print('Regla: constante')
+        print('Regla: constante float ' + str(p[0]))
         self.semantica.push_const_operand(p[0], VarType.FLOAT)
         pass
 
     @_('CTE_S', 'CTE_C')
     def constante(self, p):
-        print('Regla: constante')
+        print('Regla: constante char ' + str(p[0]))
         self.semantica.push_const_operand(p[0], VarType.CHAR)
         pass
 
     @_('array_usage')
     def constante(self, p):
-        print('Regla: constante')
+        print('Regla: constante array_usage')
         pass
 
     # Operaciones con ARREGLOS
+    # DECLARACION
     @_('"[" CTE_I "]"')
     def array_dec(self, p):
         print('Regla: array_dec 1 dim')
@@ -435,6 +449,7 @@ class CompParser(SlyParser):
         print('Regla: array_dec empty')
         return []
 
+    # USAGE
     @_('ID "[" exp "]" array_usage1')
     def array_usage(self, p):
         print('Regla: array_usage')
@@ -453,6 +468,6 @@ class CompParser(SlyParser):
     def error(self, p):
         if p:
             print("Syntactical ERROR! Error at token ", p.type)
-            self.errok()
+            #self.errok()
         else:
             print("Syntactical ERROR! Error at EOF")
