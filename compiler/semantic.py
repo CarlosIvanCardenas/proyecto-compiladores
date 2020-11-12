@@ -87,13 +87,14 @@ class SemanticActions:
         """
         # Si la función no es VOID añadela a la memoria global.
         if return_type != ReturnType.VOID:
-            function_id = "fun_" + scope
+            function_id = "_fun_" + scope
             self.add_var(function_id, VarType(return_type.value), [])
 
         self.current_scope = scope
         self.functions_directory[scope] = FunctionsDirectoryItem(
             name=scope,
-            return_type=return_type
+            return_type=return_type,
+            param_table = []
         )
         self.current_var_table = dict()
 
@@ -110,7 +111,7 @@ class SemanticActions:
         Genera el cuadruplo con la instrucción ENDFUN.
         """
         # Save partition sizes for ERA instruction.
-        fun = get_fun(self.current_scope)
+        fun = self.get_fun(self.current_scope)
         fun.partition_sizes = self.v_memory_manager.local_addr.get_partition_sizes()
         self.quad_list.append(Quadruple(Operator.ENDFUN, '', '', ''))
         self.set_global_scope()
@@ -154,7 +155,7 @@ class SemanticActions:
         :param var_type: Tipo de dato de la variable temporal
         :return: Dirección asignada a la nueva variable temporal
         """
-        addr = self.v_memory_manager.temp_addr.allocate_addr(var_type, size)
+        addr = self.v_memory_manager.temp_addr.allocate_addr(var_type)
 
         self.current_var_table[var_name] = VarTableItem(
             name=var_name,
@@ -239,8 +240,8 @@ class SemanticActions:
                 result_id = "_temp_" + str(self.temp_vars_index)
                 result_addr = self.add_temp(result_id, result_type)
                 self.temp_vars_index += 1
-                self.quad_list.append(Quadruple(operator, left_operand.address, right_operand.address, result_addr))
-                self.operands_stack.append(result)
+                self.quad_list.append(Quadruple(Operator(operator), left_operand.address, right_operand.address, result_addr))
+                self.operands_stack.append(result_id)
             else:
                 raise Exception("Type mismatch")
         else:
@@ -390,9 +391,9 @@ class SemanticActions:
             exp = self.get_var(self.operands_stack.pop())
             if exp.type == VarType.INT or exp.type == VarType.FLOAT:
                 control = self.get_var(self.operands_stack.pop())
-                tipo_res = self.semantic_cube.type_match(control.type, exp.type, '=')
+                tipo_res = self.semantic_cube.type_match(control.type, exp.type, Operator.ASSIGN)
                 if tipo_res == 'int' or tipo_res == 'float':
-                    self.quad_list.append(Quadruple(Operator('='), exp.address, '', control.address))
+                    self.quad_list.append(Quadruple(Operator.ASSIGN, exp.address, '', control.address))
                     self.operands_stack.append(control.name)
                 else:
                     raise Exception("Type mismatch")
@@ -412,7 +413,7 @@ class SemanticActions:
                 if control.type == VarType.INT or control.type == VarType.FLOAT:
                     final = "_final_" + control.name
                     final_address = self.add_temp(final, exp.type)
-                    self.quad_list.append(Quadruple(Operator('='), exp.address, '', final_address))
+                    self.quad_list.append(Quadruple(Operator.ASSIGN, exp.address, '', final_address))
                     temp = "_temp_" + str(self.temp_vars_index)
                     self.temp_vars_index += 1
                     temp_address = self.add_temp(temp, "bool")
@@ -440,7 +441,7 @@ class SemanticActions:
             temp_address = self.add_temp(temp, tipo_res)
             self.quad_list.append(
                 Quadruple(Operator('+'), control.address, self.get_const(1, VarType.INT), temp_address))
-            self.quad_list.append(Quadruple(Operator('='), temp_address, '', control.address))
+            self.quad_list.append(Quadruple(Operator.ASSIGN, temp_address, '', control.address))
             end = self.jumps_stack.pop()
             ret = self.jumps_stack.pop()
             self.quad_list.append(Quadruple(Operator('goto'), '', '', ret))
@@ -488,17 +489,41 @@ class SemanticActions:
         # Verify that the function exists into the DirFunc
         fun = self.get_fun(fun_name)
         # Verify coherence in number of parameters
-        if len(fun.param_list) != len(arg_list):
+        if len(fun.param_table) != len(arg_list):
             raise Exception('Incorrect number of arguments in function call: ' + fun.name)
         # Generate action ERA size
         self.quad_list.append(Quadruple(Operator.ERA, '', '', fun.name))
-        for index, (param_name, arg_name) in enumerate(zip(fun.param_list, arg_list)):
-            param = self.get_var(param_name)
+        for index, (param_type, arg_name) in enumerate(zip(fun.param_table, arg_list)):
             arg = self.get_var(arg_name)
             # Verify coherence in types
-            if param.type == arg.type:
-                self.quad_list.append(Quadruple(Operator.PARAMETER, arg.name, '', index))
+            if param_type == arg.type:
+                self.quad_list.append(Quadruple(Operator.PARAMETER, arg.address, '', index))
             else:
-                raise Exception('Type mismatch, expected: ' + param.type + " got: " + arg.type)
+                raise Exception('Type mismatch, expected: ' + param_type + " got: " + arg.type)
         # Generate action GOSUB
         self.quad_list.append(Quadruple(Operator.GOSUB, fun.name, '', fun.start_addr))
+
+        # Save return value in a temp value
+        if fun.return_type != ReturnType.VOID:
+            fun_var = self.get_var("_fun_" + fun_name)
+            temp_id = "_temp_" + str(self.temp_vars_index)
+            temp_addr = self.add_temp(temp_id, fun_var.type)
+            self.temp_vars_index += 1
+            self.quad_list.append(Quadruple(Operator.ASSIGN, fun_var.address, '', temp_addr))
+            self.operands_stack.append(temp_id)
+
+    def return_stmt(self):
+        """
+        Metodo para añadir el indice del cuadruplo equivalente a la primera instrucción de una función.
+        """
+        if self.operands_stack:
+            return_exp = self.operands_stack.pop()
+            return_var = self.get_var(return_exp)
+            fun_var = self.get_var("_fun_" + self.current_scope)
+            result_type = self.semantic_cube.type_match(fun_var.type, return_var.type, Operator.ASSIGN)
+            if result_type != "error":
+                self.quad_list.append(Quadruple(Operator.ASSIGN, return_var.address, '', fun_var.address))
+            else:
+                raise Exception("Type mismatch")
+        else:
+            raise Exception("Operation stack error")

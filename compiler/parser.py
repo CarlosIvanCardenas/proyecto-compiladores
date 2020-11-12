@@ -12,12 +12,12 @@ class CompParser(SlyParser):
     semantica = SemanticActions()
 
     # Grammar rules and actions
-    @_('jump_main PROGRAM ID set_global vars funs main')
+    @_('jump_main ID set_global vars funs main')
     def program(self, p):
         print('Regla: program' + p.ID)
         return 'Programa Exitoso'
     
-    @_('')
+    @_('PROGRAM')
     def jump_main(self, p):
         print('Regla: jump_main')
         self.semantica.set_jump_main()
@@ -88,8 +88,10 @@ class CompParser(SlyParser):
         print('Regla: return_type')
         return p[1]
 
+    # RETURN
     @_('RETURN "(" expresion ")"')
     def return_stmt(self, p):
+        self.semantica.return_stmt()
         print('Regla: return_stmt')
         pass
 
@@ -113,7 +115,7 @@ class CompParser(SlyParser):
     @_('"," params')
     def params_aux(self, p):
         print('Regla: params_aux')
-        return params
+        return p.params
 
     @_('empty')
     def params_aux(self, p):
@@ -138,11 +140,12 @@ class CompParser(SlyParser):
         print('Regla: bloque')
         pass
 
-    @_('"{" estatutos return_stmt "}"')
+    @_('"{" estatutos return_stmt "}"', '"{" return_stmt "}"')
     def bloque_return(self, p):
         print('Regla: bloque_return')
         pass
 
+    # ESTATUTOS
     @_('estatuto estatutos1')
     def estatutos(self, p):
         print('Regla: estatutos')
@@ -168,12 +171,12 @@ class CompParser(SlyParser):
     # ARGUMENTOS DE LLAMADA A FUNCIÓN
     @_('"(" args ")"')
     def arg_list(self, p):
-        print('Regla: args')
+        print('Regla: arg_list')
         return p.args
 
-    @_('empty')
+    @_('"(" ")"')
     def arg_list(self, p):
-        print('Regla: args')
+        print('Regla: arg_list empty')
         return []
 
     @_('exp args_aux')
