@@ -1,59 +1,62 @@
+from compiler.symbol_table import VarType
+from compiler.quadruple import Operator
+
 class SemanticCube:
     semantic_cube = {
-        "int": {
-            "int": {
-                "+": "int", "-": "int", "*": "int", "/": "float", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
+        VarType.INT: {
+            VarType.INT: {
+                Operator.ASSIGN: VarType.INT, Operator.PLUS: VarType.INT, Operator.MINUS: VarType.INT, Operator.TIMES: VarType.INT, Operator.DIVIDE: VarType.FLOAT, Operator.LESSTHAN: VarType.BOOL, Operator.GREATERTHAN: VarType.BOOL, Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: VarType.BOOL, Operator.OR: VarType.BOOL
             },
-            "float": {
-                "+": "float", "-": "float", "*": "float", "/": "float", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
+            VarType.FLOAT: {
+                Operator.ASSIGN: VarType.INT, Operator.PLUS: VarType.FLOAT, Operator.MINUS: VarType.FLOAT, Operator.TIMES: VarType.FLOAT, Operator.DIVIDE: VarType.FLOAT, Operator.LESSTHAN: VarType.BOOL, Operator.GREATERTHAN: VarType.BOOL, Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: VarType.BOOL, Operator.OR: VarType.BOOL
             },
-            "char": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.CHAR: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "bool": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.BOOL: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             }
         },
-        "float": {
-            "int": {
-                "+": "float", "-": "float", "*": "float", "/": "float", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
+        VarType.FLOAT: {
+            VarType.INT: {
+                Operator.ASSIGN: VarType.FLOAT, Operator.PLUS: VarType.FLOAT, Operator.MINUS: VarType.FLOAT, Operator.TIMES: VarType.FLOAT, Operator.DIVIDE: VarType.FLOAT, Operator.LESSTHAN: VarType.BOOL, Operator.GREATERTHAN: VarType.BOOL, Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: VarType.BOOL, Operator.OR: VarType.BOOL
             },
-            "float": {
-                "+": "float", "-": "float", "*": "float", "/": "float", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
+            VarType.FLOAT: {
+                Operator.ASSIGN: VarType.FLOAT, Operator.PLUS: VarType.FLOAT, Operator.MINUS: VarType.FLOAT, Operator.TIMES: VarType.FLOAT, Operator.DIVIDE: VarType.FLOAT, Operator.LESSTHAN: VarType.BOOL, Operator.GREATERTHAN: VarType.BOOL, Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: VarType.BOOL, Operator.OR: VarType.BOOL
             },
-            "char": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.CHAR: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "bool": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.BOOL: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             }
         },
-        "char": {
-            "int": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+        VarType.CHAR: {
+            VarType.INT: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "float": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.FLOAT: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "char": {
-                "+": "char", "-": "char", "*": "error", "/": "error", "<": "bool", ">": "bool", "==": "bool", "!=": "bool", "&&": "error", "||": "error"
+            VarType.CHAR: {
+                Operator.ASSIGN: VarType.CHAR, Operator.PLUS: VarType.CHAR, Operator.MINUS: VarType.CHAR, Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: VarType.BOOL, Operator.GREATERTHAN: VarType.BOOL, Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: "error", Operator.OR: "error"
             },
-            "bool": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.BOOL: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             }
         },
-        "bool": {
-            "int": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+        VarType.BOOL: {
+            VarType.INT: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "float": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.FLOAT: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "char": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "error", "!=": "error", "&&": "error", "||": "error"
+            VarType.CHAR: {
+                Operator.ASSIGN: "error", Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: "error", Operator.NOTEQUAL: "error", Operator.AND: "error", Operator.OR: "error"
             },
-            "bool": {
-                "+": "error", "-": "error", "*": "error", "/": "error", "<": "error", ">": "error", "==": "bool", "!=": "bool", "&&": "bool", "||": "bool"
+            VarType.BOOL: {
+                Operator.ASSIGN: VarType.BOOL, Operator.PLUS: "error", Operator.MINUS: "error", Operator.TIMES: "error", Operator.DIVIDE: "error", Operator.LESSTHAN: "error", Operator.GREATERTHAN: "error", Operator.EQUAL: VarType.BOOL, Operator.NOTEQUAL: VarType.BOOL, Operator.AND: VarType.BOOL, Operator.OR: VarType.BOOL
             }
         }
     }
