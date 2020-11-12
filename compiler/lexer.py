@@ -21,9 +21,6 @@ class CompLexer(SlyLexer):
     LT = r'<'
     GT = r'>'
     CTE_S = r'\".+\"'
-    # CTE_I = r'\d+'
-    # CTE_F = r'\d+\.\d+'
-    # CTE_C = r'\'.\''
 
     # Identifiers and keywords
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'

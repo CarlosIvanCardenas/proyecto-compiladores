@@ -14,7 +14,7 @@ class CompParser(SlyParser):
     # Grammar rules and actions
     @_('jump_main ID set_global vars funs main')
     def program(self, p):
-        print('Regla: program' + p.ID)
+        print('Regla: program ' + p.ID)
         return 'Programa Exitoso'
     
     @_('PROGRAM')

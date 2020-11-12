@@ -175,10 +175,10 @@ class SemanticActions:
         :return: Dirección asignada a la constante
         """
         const = self.const_table.get(str(const_value))
-        if const is None:
-            return self.add_const(const_value, const_type)
-        else:
+        if const is not None and self.current_var_table.get(str(const_value)) is not None:
             return const.address
+        else:
+            return self.add_const(const_value, const_type)
 
     def add_const(self, const_value, const_type):
         """
@@ -188,6 +188,7 @@ class SemanticActions:
         :param const_type: Tipo de dato de la constante
         :return: Dirección asignada a la constante
         """
+        var: VarTableItem
         if const_type == VarType.INT or const_type == VarType.FLOAT:
             addr = self.v_memory_manager.const_addr.allocate_addr(const_type)
             var = VarTableItem(
@@ -206,7 +207,9 @@ class SemanticActions:
                 address=addr)
 
         self.const_table[str(const_value)] = var
-        self.current_var_table['_const_' + str(const_value)] = var
+        const_name = '_const_' + str(const_value)
+        self.current_var_table[const_name] = var
+        self.get_var(const_name)
         return addr
 
     def add_params(self, params):
@@ -275,12 +278,13 @@ class SemanticActions:
 
     def push_const_operand(self, const_value, const_type):
         """
-        Añade una constanto y su tipo a las pilas para generar cuadruplos
+        Añade una constante y su tipo a las pilas para generar cuadruplos
 
         :param operand: Operando a añadir
         """
         self.get_const(const_value, const_type)
         self.operands_stack.append(str(const_value))
+        self.get_var(str(const_value))
 
     def generar_lectura(self, var_name):
         """
