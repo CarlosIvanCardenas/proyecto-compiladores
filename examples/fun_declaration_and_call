@@ -7,23 +7,23 @@ var char_variable: char
 fun int_function(): int {
     var tmp: int
     tmp = 5
-    return 5
+    return (5)
 }
 
 fun float_function(): float {
     var tmp: float
     tmp = 2.5
-    return 2.5
+    return (2.5)
 }
 
 fun char_function(): char {
     var tmp: char
     tmp = 'a'
-    return tmp
+    return (tmp)
 }
 
 fun sum(a: int, b: int): int {
-    return a + b
+    return (a + b)
 }
 
 main() {
