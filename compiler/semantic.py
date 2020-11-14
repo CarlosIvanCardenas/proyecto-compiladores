@@ -130,9 +130,12 @@ class SemanticActions:
         elif len(dims) == 1:
             size = dims[0]
             dimensions = (dims[0], 0)
+            self.add_const(dims[0], VarType.INT)
         else:
             size = dims[0] * dims[1]
             dimensions = (dims[0], dims[1])
+            self.add_const(dims[0], VarType.INT)
+            self.add_const(dims[1], VarType.INT)
 
         addr: int
         if self.current_scope == 'global':
@@ -531,3 +534,60 @@ class SemanticActions:
                 raise Exception("Type mismatch")
         else:
             raise Exception("Operation stack error")
+
+    def array_usage(self, var_id, dims):
+        """
+        Metodo adquirir direccion real de arreglo indexado y agregarlo al stack de operandos
+        """
+        var = self.get_var(var_id)
+        if dims == 1:
+            # Una dimension
+            if var.dims[0] > 0:
+                if self.operands_stack:
+                    dim = self.operands_stack.pop()
+                    dim_var = self.get_var(dim)
+                    if dim_var.type == VarType.INT:
+                        self.quad_list.append(Quadruple(Operator.VERIFY, dim_var.address, self.get_const(0, VarType.INT), self.get_const(var.dims[0], VarType.INT)))
+                        temp_id = "_temp_" + str(self.temp_vars_index)
+                        temp_addr = self.add_temp(temp_id, VarType.INT)
+                        self.temp_vars_index += 1
+                        self.quad_list.append(Quadruple(Operator.PLUS, dim_var.address, self.get_const(var.address, VarType.INT), temp_addr))
+                        # TODO: temp_id tiene la direccion del arreglo indexado
+                        self.operands_stack.append(temp_id)
+                    else:
+                        raise Exception("Index type error")
+                else:
+                    raise Exception("Operation stack error")
+            else:
+                raise Exception("Var " + str(var_id) + " is not an array of 1 dimension")
+        else:
+            # Dos dimensiones
+            if var.dims[0] > 0 and var.dims[1] > 0:
+                if self.operands_stack:
+                    dim2 = self.operands_stack.pop()
+                    dim2_var = self.get_var(dim2)
+                    dim1 = self.operands_stack.pop()
+                    dim1_var = self.get_var(dim1)
+                    if dim1_var.type == VarType.INT and dim2_var.type == VarType.INT:
+                        self.quad_list.append(Quadruple(Operator.VERIFY, dim1_var.address, self.get_const(0, VarType.INT), self.get_const(var.dims[0], VarType.INT)))
+                        temp1_id = "_temp_" + str(self.temp_vars_index)
+                        temp1_addr = self.add_temp(temp_id, VarType.INT)
+                        self.temp_vars_index += 1
+                        self.quad_list.append(Quadruple(Operator.TIMES, dim1_var.address, self.get_const(var.dims[1], VarType.INT), temp1_addr))
+                        temp2_id = "_temp_" + str(self.temp_vars_index)
+                        temp2_addr = self.add_temp(temp_id, VarType.INT)
+                        self.temp_vars_index += 1
+                        self.quad_list.append(Quadruple(Operator.PLUS, temp1_addr, self.get_const(var.address, VarType.INT), temp2_addr))
+                        self.quad_list.append(Quadruple(Operator.VERIFY, dim2_var.address, self.get_const(0, VarType.INT), self.get_const(var.dims[1], VarType.INT)))
+                        temp3_id = "_temp_" + str(self.temp_vars_index)
+                        temp3_addr = self.add_temp(temp_id, VarType.INT)
+                        self.temp_vars_index += 1
+                        self.quad_list.append(Quadruple(Operator.PLUS, temp2_addr, dim2_var.address, temp3_addr))
+                        # TODO: temp_id tiene la direccion del arreglo indexado
+                        self.operands_stack.append(temp3_addr)
+                    else:
+                        raise Exception("Index type error")
+                else:
+                    raise Exception("Operation stack error")
+            else:
+                raise Exception("Var " + str(var_id) + " is not an array of 2 dimensions")

@@ -25,6 +25,7 @@ class Operator(Enum):
     PARAMETER = 'parameter'
     ENDFUN = 'endfun'
     ERA = 'era'
+    VERIFY = 'verify'
     # TODO: Agregar los que faltan
 
 @dataclass

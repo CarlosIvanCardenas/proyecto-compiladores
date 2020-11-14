@@ -453,14 +453,16 @@ class CompParser(SlyParser):
         return []
 
     # USAGE
-    @_('ID "[" exp "]" array_usage1')
+    @_('ID "[" exp "]"')
     def array_usage(self, p):
-        print('Regla: array_usage')
+        p.semantic.array_usage(p.ID, 1)
+        print('Regla: array_usage 1 dimension')
         pass
 
-    @_('"[" exp "]"', 'empty')
-    def array_usage1(self, p):
-        print('Regla: array_usage1')
+    @_('ID "[" exp "]" "[" exp "]"')
+    def array_usage(self, p):
+        p.semantic.array_usage(p.ID, 2)
+        print('Regla: array_usage 2 dimensiones')
         pass
 
     @_('')
