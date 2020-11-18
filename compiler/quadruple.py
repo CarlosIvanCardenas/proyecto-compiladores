@@ -14,6 +14,8 @@ class Operator(Enum):
     OR = '||'
     LESSTHAN = '<'
     GREATERTHAN = '>'
+    LESSTHANOREQ = '<='
+    GREATERTHANOREQ = '>='
     EQUAL = '=='
     NOTEQUAL = '!='
     READ = 'read'
