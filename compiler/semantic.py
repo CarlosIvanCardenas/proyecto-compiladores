@@ -178,10 +178,13 @@ class SemanticActions:
         :return: Dirección asignada a la constante
         """
         const = self.const_table.get(str(const_value))
-        if const is not None and self.current_var_table.get(str(const_value)) is not None:
-            return const.address
-        else:
+        if const is None:
             return self.add_const(const_value, const_type)
+        else:
+            if self.current_var_table.get(str(const_value)) is None:
+                const_name = '_const_' + str(const_value)
+                self.current_var_table[const_name] = const
+            return const.address
 
     def add_const(self, const_value, const_type):
         """
@@ -260,8 +263,8 @@ class SemanticActions:
         :param name_var: nombre de la variable donde se va a asignar el valor
         """
         if self.operands_stack:
-            right_operand = self.get_var(name_var)
-            left_operand = self.get_var(self.operands_stack.pop())
+            left_operand = self.get_var(name_var)
+            right_operand = self.get_var(self.operands_stack.pop())
             result_type = self.semantic_cube.type_match(left_operand.type, right_operand.type, Operator.ASSIGN)
             if result_type != "error":
                 self.quad_list.append(Quadruple(Operator.ASSIGN, right_operand.address, '', left_operand.address))

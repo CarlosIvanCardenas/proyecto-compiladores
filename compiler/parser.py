@@ -409,7 +409,7 @@ class CompParser(SlyParser):
     @_('ID')
     def constante(self, p):
         self.semantica.push_var_operand(p[0])
-        print('Regla: constante ' + p[0])
+        print('Regla: constante id ' + p[0])
         pass
 
     @_('CTE_I')
