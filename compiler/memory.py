@@ -92,6 +92,7 @@ class VirtualMemoryManager:
         self.local_addr = AddressBlock(LOCAL_ADDRESS_RANGE[0], LOCAL_ADDRESS_RANGE[1])
         self.const_addr = AddressBlock(CONST_ADDRESS_RANGE[0], CONST_ADDRESS_RANGE[1])
         self.temp_addr = AddressBlock(TEMP_ADDRESS_RANGE[0], TEMP_ADDRESS_RANGE[1])
+        self.pointer_addr = AddressBlock(POINTER_ADDRESS_RANGE[0], POINTER_ADDRESS_RANGE[1])
 
     def clear_mem(self):
         """
