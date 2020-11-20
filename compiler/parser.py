@@ -2,6 +2,7 @@ from sly import Parser as SlyParser
 from compiler.lexer import Tokens
 from compiler.semantic import SemanticActions
 from compiler.symbol_table import ReturnType, VarType
+from compiler.output import CompilerOutput
 from common.debug_flags import DEBUG_PARSER
 
 class CompParser(SlyParser):
@@ -10,24 +11,26 @@ class CompParser(SlyParser):
     # Get the token list from the lexer
     tokens = Tokens
 
-    semantica = SemanticActions()
+    semantics = SemanticActions()
 
     # Grammar rules and actions
     @_('jump_main ID set_global vars funs main')
     def program(self, p):
         if DEBUG_PARSER:
             print('Regla: program ' + p.ID)
-        return 'Programa Exitoso'
+        return CompilerOutput(quadruples=self.semantics.quad_list,
+                              constants=self.semantics.const_table,
+                              functions_directory=self.semantics.functions_directory)
     
     @_('PROGRAM')
     def jump_main(self, _):
         if DEBUG_PARSER:
             print('Regla: jump_main')
-        self.semantica.set_jump_main()
+        self.semantics.set_jump_main()
     
     @_('')
     def set_global(self, _):
-        self.semantica.set_global_scope()
+        self.semantics.set_global_scope()
         if DEBUG_PARSER:
             print('Regla: set_global')
 
@@ -40,7 +43,7 @@ class CompParser(SlyParser):
 
     @_('VAR ID array_dec ":" tipo')
     def var(self, p):
-        self.semantica.add_var(var_name=p.ID, var_type=p.tipo, dims=p.array_dec)
+        self.semantics.add_var(var_name=p.ID, var_type=p.tipo, dims=p.array_dec)
         if DEBUG_PARSER:
             print('Regla: var con ' + p.ID)
         pass
@@ -64,35 +67,35 @@ class CompParser(SlyParser):
     def fun(self, _):
         if DEBUG_PARSER:
             print('Regla: fun')
-        self.semantica.end_fun()
+        self.semantics.end_fun()
         pass
 
     @_('FUN ID param_list return_type')
     def fun_header(self, p):
         if DEBUG_PARSER:
             print('Regla: fun_header ' + p.ID)
-        self.semantica.set_current_scope(p.ID, ReturnType(p.return_type))
-        self.semantica.add_params(p.param_list)
+        self.semantics.set_current_scope(p.ID, ReturnType(p.return_type))
+        self.semantics.add_params(p.param_list)
         pass
 
     @_('fun_header_void set_start_addr bloque')
     def fun_void(self, _):
         if DEBUG_PARSER:
             print('Regla: fun')
-        self.semantica.end_fun()
+        self.semantics.end_fun()
         pass
 
     @_('FUN ID param_list ":" VOID')
     def fun_header_void(self, p):
         if DEBUG_PARSER:
             print('Regla: fun_header ' + p.ID)
-        self.semantica.set_current_scope(p.ID, ReturnType("void"))
-        self.semantica.add_params(p.param_list)
+        self.semantics.set_current_scope(p.ID, ReturnType("void"))
+        self.semantics.add_params(p.param_list)
         pass
 
     @_('')
     def set_start_addr(self, _):
-        self.semantica.set_fun_start_addr()
+        self.semantics.set_fun_start_addr()
         pass
 
     @_('":" tipo')
@@ -104,7 +107,7 @@ class CompParser(SlyParser):
     # RETURN
     @_('RETURN "(" expresion ")"')
     def return_stmt(self, _):
-        self.semantica.return_stmt()
+        self.semantics.return_stmt()
         if DEBUG_PARSER:
             print('Regla: return_stmt')
         pass
@@ -150,7 +153,7 @@ class CompParser(SlyParser):
 
     @_('MAIN "(" ")"')
     def start_main(self, _):
-        self.semantica.complete_main_jump()
+        self.semantics.complete_main_jump()
         if DEBUG_PARSER:
             print('Regla: start_main')
         pass
@@ -192,7 +195,7 @@ class CompParser(SlyParser):
     def call_fun(self, p):
         if DEBUG_PARSER:
             print('Regla: call_fun')
-        self.semantica.fun_call(p[0], p.arg_list)
+        self.semantics.fun_call(p[0], p.arg_list)
         pass
 
     # ARGUMENTOS DE LLAMADA A FUNCIÓN
@@ -212,7 +215,7 @@ class CompParser(SlyParser):
     def args(self, p):
         if DEBUG_PARSER:
             print('Regla: arg_list')
-        p.args_aux.append((self.semantica.operands_stack.pop()))
+        p.args_aux.append((self.semantics.operands_stack.pop()))
         return p.args_aux
 
     @_('"," args')
@@ -232,20 +235,20 @@ class CompParser(SlyParser):
     def asignacion(self, p):
         if DEBUG_PARSER:
             print('Regla: asignacion')
-        self.semantica.generate_quad_assign(p.ID)
+        self.semantics.generate_quad_assign(p.ID)
         pass
 
     # ESTATUTOS CONDICIONALES
     @_('start_if bloque condicion1')
     def condicion(self, _):
-        self.semantica.end_if()
+        self.semantics.end_if()
         if DEBUG_PARSER:
             print('Regla: condicion')
         pass
 
     @_('IF "(" expresiones ")"')
     def start_if(self, _):
-        self.semantica.start_if()
+        self.semantics.start_if()
         if DEBUG_PARSER:
             print('Regla: condicion')
         pass
@@ -258,7 +261,7 @@ class CompParser(SlyParser):
 
     @_('ELSE')
     def inicio_else(self, _):
-        self.semantica.start_else()
+        self.semantics.start_else()
         if DEBUG_PARSER:
             print('Regla: condicion1')
         pass
@@ -272,14 +275,14 @@ class CompParser(SlyParser):
 
     @_('ID')
     def id_lectura(self, p):
-        self.semantica.generar_lectura(p.ID)
+        self.semantics.generar_lectura(p.ID)
         if DEBUG_PARSER:
             print('Regla: lectura')
         pass
 
     @_('"," ID lectura1')
     def lectura1(self, p):
-        self.semantica.generar_lectura(p.ID)
+        self.semantics.generar_lectura(p.ID)
         if DEBUG_PARSER:
             print('Regla: lectura1')
         pass
@@ -293,37 +296,37 @@ class CompParser(SlyParser):
     # ESCRITURA
     @_('WRITE "(" constante ")"')
     def escritura(self, _):
-        self.semantica.generar_escritura()
+        self.semantics.generar_escritura()
         if DEBUG_PARSER:
             print('Regla: escritura')
         pass
 
     # CICLOS CONDICIONALES
-    #FOR
+    # FOR
     @_('inicio_for initial_value_for end_value_for bloque')
     def ciclo_for(self, _):
-        self.semantica.end_for()
+        self.semantics.end_for()
         if DEBUG_PARSER:
             print('Regla: ciclo_for')
         pass
 
     @_('FOR ID')
     def inicio_for(self, p):
-        self.semantica.start_for(p.ID)
+        self.semantics.start_for(p.ID)
         if DEBUG_PARSER:
             print('Regla: inicio_for')
         pass
 
     @_('ASSIGN exp')
     def initial_value_for(self, _):
-        self.semantica.valor_inicial_for()
+        self.semantics.valor_inicial_for()
         if DEBUG_PARSER:
             print('Regla: valor_inicial_for')
         pass
 
     @_('TO exp')
     def end_value_for(self, _):
-        self.semantica.valor_final_for()
+        self.semantics.valor_final_for()
         if DEBUG_PARSER:
             print('Regla: valor_final_for')
         pass
@@ -331,21 +334,21 @@ class CompParser(SlyParser):
     # WHILE
     @_('inicio_while expresion_while bloque')
     def ciclo_while(self, _):
-        self.semantica.end_while()
+        self.semantics.end_while()
         if DEBUG_PARSER:
             print('Regla: ciclo_while')
         pass
 
     @_('WHILE')
     def inicio_while(self, _):
-        self.semantica.start_while()
+        self.semantics.start_while()
         if DEBUG_PARSER:
             print('Regla: inicio_while')
         pass
 
     @_('"(" expresiones ")"')
     def expresion_while(self, _):
-        self.semantica.expresion_while()
+        self.semantics.expresion_while()
         if DEBUG_PARSER:
             print('Regla: expresion_while')
         pass
@@ -355,15 +358,15 @@ class CompParser(SlyParser):
     def expresiones(self, _):
         if DEBUG_PARSER:
             print('Regla: expresiones')
-        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['&&', '||']:
-            self.semantica.generate_quad()
+        if self.semantics.operators_stack and self.semantics.operators_stack[-1] in ['&&', '||']:
+            self.semantics.generate_quad()
         pass
 
     @_('AND expresiones', 'OR expresiones')
     def expresiones1(self, p):
         if DEBUG_PARSER:
             print('Regla: expresiones1')
-        self.semantica.operators_stack.append(p[0])
+        self.semantics.operators_stack.append(p[0])
         pass
 
     @_('empty')
@@ -383,8 +386,8 @@ class CompParser(SlyParser):
     def expresion1(self, _):
         if DEBUG_PARSER:
             print('Regla: expresion1')
-        if self.semantica.operators_stack[-1] in ['>', '<', '!=', '==']:
-            self.semantica.generate_quad()
+        if self.semantics.operators_stack[-1] in ['>', '<', '!=', '==']:
+            self.semantics.generate_quad()
         pass
 
     @_('empty')
@@ -397,7 +400,7 @@ class CompParser(SlyParser):
     def expresion2(self, p):
         if DEBUG_PARSER:
             print('Regla: expresion2')
-        self.semantica.operators_stack.append(p[0])
+        self.semantics.operators_stack.append(p[0])
         pass
 
     # EXP
@@ -405,8 +408,8 @@ class CompParser(SlyParser):
     def exp(self, _):
         if DEBUG_PARSER:
             print('Regla: exp')
-        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['+', '-']:
-            self.semantica.generate_quad()
+        if self.semantics.operators_stack and self.semantics.operators_stack[-1] in ['+', '-']:
+            self.semantics.generate_quad()
         pass
 
     @_('exp2 exp', 'empty')
@@ -419,7 +422,7 @@ class CompParser(SlyParser):
     def exp2(self, p):
         if DEBUG_PARSER:
             print('Regla: exp2')
-        self.semantica.operators_stack.append(p[0])
+        self.semantics.operators_stack.append(p[0])
         pass
 
     # TERMINO
@@ -427,8 +430,8 @@ class CompParser(SlyParser):
     def termino(self, _):
         if DEBUG_PARSER:
             print('Regla: termino')
-        if self.semantica.operators_stack and self.semantica.operators_stack[-1] in ['*', '/']:
-            self.semantica.generate_quad()
+        if self.semantics.operators_stack and self.semantics.operators_stack[-1] in ['*', '/']:
+            self.semantics.generate_quad()
         pass
 
     @_('termino2 termino')
@@ -447,7 +450,7 @@ class CompParser(SlyParser):
     def termino2(self, p):
         if DEBUG_PARSER:
             print('Regla: termino2')
-        self.semantica.operators_stack.append(p[0])
+        self.semantics.operators_stack.append(p[0])
         pass
     
     # FACTOR
@@ -455,14 +458,14 @@ class CompParser(SlyParser):
     def factor(self, _):
         if DEBUG_PARSER:
             print('Regla: factor')
-        self.semantica.operators_stack.pop()
+        self.semantics.operators_stack.pop()
         pass
 
     @_('"("')
     def add_par(self, p):
         if DEBUG_PARSER:
             print('Regla: add_par')
-        self.semantica.operators_stack.append(p[0])
+        self.semantics.operators_stack.append(p[0])
         pass
 
     @_('constante')
@@ -474,30 +477,30 @@ class CompParser(SlyParser):
     # CONSTANTE
     @_('ID')
     def constante(self, p):
-        self.semantica.push_var_operand(p[0])
+        self.semantics.push_var_operand(p[0])
         if DEBUG_PARSER:
-            print('Regla: constante ' + p[0])
+            print('Regla: constante id ' + p[0])
         pass
 
     @_('CTE_I')
     def constante(self, p):
         if DEBUG_PARSER:
             print('Regla: constante int ' + str(p[0]))
-        self.semantica.push_const_operand(p[0], VarType.INT)
+        self.semantics.push_const_operand(p[0], VarType.INT)
         pass
 
     @_('CTE_F')
     def constante(self, p):
         if DEBUG_PARSER:
             print('Regla: constante float ' + str(p[0]))
-        self.semantica.push_const_operand(p[0], VarType.FLOAT)
+        self.semantics.push_const_operand(p[0], VarType.FLOAT)
         pass
 
     @_('CTE_S', 'CTE_C')
     def constante(self, p):
         if DEBUG_PARSER:
             print('Regla: constante char ' + str(p[0]))
-        self.semantica.push_const_operand(p[0], VarType.CHAR)
+        self.semantics.push_const_operand(p[0], VarType.CHAR)
         pass
 
     @_('array_usage')

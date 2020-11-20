@@ -1,5 +1,7 @@
-from common.scope_size import GLOBAL_ADDRESS_RANGE, LOCAL_ADDRESS_RANGE, CONST_ADDRESS_RANGE, TEMP_ADDRESS_RANGE
-from compiler.quadruple import Operator
+from dataclasses import dataclass
+from common.scope_size import GLOBAL_ADDRESS_RANGE, LOCAL_ADDRESS_RANGE, CONST_ADDRESS_RANGE, TEMP_ADDRESS_RANGE, \
+    POINTER_ADDRESS_RANGE
+from compiler.quadruple import Operator, Quadruple
 from compiler.symbol_table import VarType
 from vm.memory import AddressBlock
 from common.debug_flags import DEBUG_VM
@@ -46,7 +48,9 @@ class VM:
         self.next_exe_scope: ExeScope = None
 
         self.quad_list = quad_list
-        self.const_memory = dict(map(lambda c: (c[1], c[0]), const_table.values()))
+        self.const_memory = dict(map(lambda c: (c[1].address, c[1]), const_table.items()))
+        for const in const_table.items():
+            print(const)
         self.fun_dir = fun_dir
 
     def get_current_frame(self):
@@ -71,7 +75,7 @@ class VM:
         para el cambio de contexto.
         """
         # TODO: Definir bien los rangos del nuevo frame
-        self.next_frame = Frame(IP=IP, memory=MemoryBlock(
+        self.next_frame = Frame(IP=IP, memory=AddressBlock(
             LOCAL_ADDRESS_RANGE[0],
             LOCAL_ADDRESS_RANGE[1],
             int_size,
@@ -84,14 +88,14 @@ class VM:
         Anade el nuevo contexto al execution stack para completar el cambio de contexto una vez que la MV
         esta lista, y deja self.next_frame vacia.
         """
-        self.frames.append(self.next_frame)
+        self.execution_stack.append(self.next_frame)
         self.next_frame = None
 
     def restore_past_frame(self):
         """
         Elimina el frame actual cuando la funcion que lo necesitaba termina su ejecucion
         """
-        self.frames.pop()
+        self.execution_stack.pop()
 
     def write(self, addr, value):
         """
@@ -123,6 +127,12 @@ class VM:
         :param addr: Dirección (absoluta) de la cual se desea leer un valor.
         :return: El valor asignado en la dirección "addr".
         """
+        # FOR DEBUG PURPOSES
+        if addr is None:
+            return ''
+        if type(addr) is str:
+            return addr
+
         if GLOBAL_ADDRESS_RANGE[0] <= addr < GLOBAL_ADDRESS_RANGE[1]:
             return self.global_memory.read(addr)
         elif LOCAL_ADDRESS_RANGE[0] <= addr < LOCAL_ADDRESS_RANGE[1]:
@@ -167,7 +177,15 @@ class VM:
         el resultado en el operando C
         """
         frame = self.get_current_frame()
-        (instruction, A, B, C) = self.quad_list[frame.IP]
+        current_quad: Quadruple
+        current_quad = self.quad_list[frame.IP]
+        instruction = current_quad.operator
+        A = current_quad.left_operand
+        B = current_quad.right_operand
+        C = current_quad.result
+
+        if DEBUG_VM:
+            print(f'{frame.IP}.\t{instruction}\tA:{A}\tB:{B}\tC:{C}')
 
         if instruction == Operator.PLUS:
             self.write(C, self.read(A) + self.read(B))
@@ -285,11 +303,11 @@ class VM:
             la funcion a ejecutar (su direccion de inicio y los tamanos requeridos para sus variables).
             """
             self.start_new_frame(
-                IP=self.func_dir[C].start_addr,
-                int_size=self.func_dir[C].partition_sizes[0],
-                float_size=self.func_dir[C].partition_sizes[1],
-                char_size=self.func_dir[C].partition_sizes[2],
-                bool_size=self.func_dir[C].partition_sizes[3],
+                IP=self.fun_dir[C].start_addr,
+                int_size=self.fun_dir[C].partition_sizes[0],
+                float_size=self.fun_dir[C].partition_sizes[1],
+                char_size=self.fun_dir[C].partition_sizes[2],
+                bool_size=self.fun_dir[C].partition_sizes[3],
             )
         elif instruction == Operator.VERIFY:
             """
@@ -307,6 +325,6 @@ class VM:
         Ejecuta todas las intrucciones de la quad_list
         """
         if DEBUG_VM:
-            print("Inicio ejecución:")
+            print("\nInicio ejecución:")
         while self.get_current_frame().IP < len(self.quad_list):
             self.next_instruction()

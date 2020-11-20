@@ -1,6 +1,8 @@
 from compiler.lexer import CompLexer
 from compiler.parser import CompParser
-from common.debug_flags import DEBUG_UI, DEBUG_LEXER
+from compiler.output import CompilerOutput
+from vm.vm import VM
+from common.debug_flags import DEBUG_UI, DEBUG_LEXER, DEBUG_SEMANTIC
 import sys
 
 def main():
@@ -11,7 +13,6 @@ def main():
         # Lee codigo desde un archivo especificado
         input_file = open("examples/fun_declaration_and_call", "r")
         code = input_file.read()
-        print(code + '\n')
         input_file.close()
 
     # LEXER: Lexical Analysis
@@ -22,8 +23,20 @@ def main():
 
     # PARSER: Syntactic Analysis
     parser = CompParser()
-    result = parser.parse(lexer.tokenize(code))
-    print('Result: ' + result)
+    compiler_output: CompilerOutput
+    compiler_output = parser.parse(lexer.tokenize(code))
+
+    # SEMANTICS
+    if DEBUG_SEMANTIC:
+        print('Quads: ')
+        for i, quad in enumerate(compiler_output.quadruples):
+            print(f'{i}.\t{quad.operator}\tA:{quad.left_operand}\tB:{quad.right_operand}\tC:{quad.result}')
+
+    # VIRTUAL MACHINE
+    vm = VM(quad_list=compiler_output.quadruples,
+            const_table=compiler_output.constants,
+            fun_dir=compiler_output.functions_directory)
+    vm.run()
 
 
 if __name__ == '__main__':

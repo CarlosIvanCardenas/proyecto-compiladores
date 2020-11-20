@@ -19,14 +19,10 @@ class AddressBlock:
         self.start_addr = start_addr
         default_size = (end_addr - start_addr + 1) // 4
 
-        if int_size is None:
-            self.int_size = default_size
-        if float_size is None:
-            self.float_size = default_size
-        if char_size is None:
-            self.char_size = default_size
-        if bool_size is None:
-            self.bool_size = default_size
+        self.int_size = default_size if int_size is None else int_size
+        self.float_size = default_size if float_size is None else float_size
+        self.char_size = default_size if char_size is None else char_size
+        self.bool_size = default_size if bool_size is None else bool_size
 
         self.int_addr_block = [None] * self.int_size
         self.float_addr_block = [None] * self.float_size
@@ -52,7 +48,7 @@ class AddressBlock:
                                                                                self.char_size + self.bool_size):
             return VarType.BOOL
         else:
-            raise MemoryError('Address out of bounds')
+            raise MemoryError(f'Address: {addr} out of bounds')
 
     def get_address(self, addr, partition):
         """
