@@ -591,3 +591,7 @@ class SemanticActions:
                     raise Exception("Operation stack error")
             else:
                 raise Exception("Var " + str(var_id) + " is not an array of 2 dimensions")
+
+QuadList = SemanticActions.quad_list
+FuncDir = SemanticActions.functions_directory
+ConstTable = SemanticActions.const_table
