@@ -50,6 +50,9 @@ class VM:
         self.const_memory = dict(map(lambda c: (c[1].address, c[1]), const_table.items()))
         self.fun_dir = fun_dir
 
+        for const in const_table.items():
+            print(const)
+
     def get_current_frame(self):
         """
         Funcion que regresa el frame actual, el cual se encuentra al tope del stack de ejecucion
@@ -314,10 +317,18 @@ class VM:
             VERIFY se asegura de que el indice A este entre los limites B y C, que corresponden a los limites de la
             dimension correspondiente de un arreglo
             """
-            index = int(self.read(A))
-            if not B <= index < C:
+            try:
+                index = int(self.read(A))
+            except:
+                raise TypeError("Index is not an integer")
+            if not self.read(B) <= index < self.read(C):
                 raise Exception("Index out of bounds")
-
+        elif instruction == Operator.ASSIGNPTR:
+            """
+            VERIFY se asegura de que el indice A este entre los limites B y C, que corresponden a los limites de la
+            dimension correspondiente de un arreglo
+            """
+            self.pointer_memory.write(C, self.read(A))
         frame.IP += 1
 
     def run(self):

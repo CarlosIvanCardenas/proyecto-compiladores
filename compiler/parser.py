@@ -249,14 +249,14 @@ class CompParser(SlyParser):
     def asignacion(self, p):
         if DEBUG_PARSER:
             print('Regla: asignacion')
-        self.semantics.generate_quad_assign(p.ID)
+        self.semantics.generate_quad_assign(name_var=p.ID)
         pass
 
     @_('array_usage ASSIGN expresion', 'array_usage ASSIGN call_fun_no_void')
     def asignacion(self, p):
         if DEBUG_PARSER:
             print('Regla: asignacion')
-        self.semantics.generate_quad_assign(p.ID)
+        self.semantics.generate_quad_assign(array=True)
         pass
 
     # ESTATUTOS CONDICIONALES
@@ -541,14 +541,14 @@ class CompParser(SlyParser):
     # USAGE
     @_('ID "[" exp "]"')
     def array_usage(self, p):
-        p.semantic.array_usage(p.ID, 1)
+        self.semantics.array_usage(p.ID, 1)
         if DEBUG_PARSER:
             print('Regla: array_usage 1 dimension')
         pass
 
     @_('ID "[" exp "]" "[" exp "]"')
     def array_usage(self, p):
-        p.semantic.array_usage(p.ID, 2)
+        self.semantics.array_usage(p.ID, 2)
         if DEBUG_PARSER:
             print('Regla: array_usage 2 dimensiones')
         pass
@@ -561,7 +561,7 @@ class CompParser(SlyParser):
 
     def error(self, p):
         if p:
-            raise Exception("Syntactical ERROR! Error at token ", p.type)
+            raise Exception("Syntactical ERROR! Error at token " + str(p.type) + " in line " + str(p.lineno))
             # self.errok()
         else:
             raise Exception("Syntactical ERROR! Error at EOF")
