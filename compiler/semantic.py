@@ -145,7 +145,7 @@ class SemanticActions:
 
         self.current_var_table[var_name] = VarTableItem(
             name=var_name,
-            type=VarType(var_type),
+            type=var_type,
             dims=dimensions,
             size=size,
             address=addr)
