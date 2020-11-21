@@ -194,8 +194,15 @@ class CompParser(SlyParser):
     @_('ID arg_list')
     def call_fun(self, p):
         if DEBUG_PARSER:
-            print('Regla: call_fun')
+            print('Regla: call_fun ' + str(p.ID))
         self.semantics.fun_call(p[0], p.arg_list)
+        pass
+
+    @_('ID arg_list')
+    def call_fun_no_void(self, p):
+        if DEBUG_PARSER:
+            print('Regla: call_fun no void ' + str(p.ID))
+        self.semantics.fun_call(p[0], p.arg_list, needs_return=True)
         pass
 
     # ARGUMENTOS DE LLAMADA A FUNCIÓN
@@ -214,24 +221,38 @@ class CompParser(SlyParser):
     @_('exp args_aux')
     def args(self, p):
         if DEBUG_PARSER:
-            print('Regla: arg_list')
+            print('Regla: arg exp')
+        p.args_aux.append((self.semantics.operands_stack.pop()))
+        return p.args_aux
+    
+    @_('call_fun_no_void args_aux')
+    def args(self, p):
+        if DEBUG_PARSER:
+            print('Regla: arg call_fun')
         p.args_aux.append((self.semantics.operands_stack.pop()))
         return p.args_aux
 
     @_('"," args')
     def args_aux(self, p):
         if DEBUG_PARSER:
-            print('Regla: arg_list1')
+            print('Regla: arg_aux')
         return p.args
 
     @_('empty')
     def args_aux(self, _):
         if DEBUG_PARSER:
-            print('Regla: arg_list1')
+            print('Regla: arg_aux empty')
         return []
 
     # ASIGNACIÓN
-    @_('ID ASSIGN expresion', 'ID ASSIGN call_fun')
+    @_('ID ASSIGN expresion', 'ID ASSIGN call_fun_no_void')
+    def asignacion(self, p):
+        if DEBUG_PARSER:
+            print('Regla: asignacion')
+        self.semantics.generate_quad_assign(p.ID)
+        pass
+
+    @_('array_usage ASSIGN expresion', 'array_usage ASSIGN call_fun_no_void')
     def asignacion(self, p):
         if DEBUG_PARSER:
             print('Regla: asignacion')
@@ -267,30 +288,11 @@ class CompParser(SlyParser):
         pass
 
     # LECTURA
-    @_('READ "(" id_lectura lectura1 ")"')
+    @_('READ "(" ID ")"')
     def lectura(self, _):
-        if DEBUG_PARSER:
-            print('Regla: lectura')
-        pass
-
-    @_('ID')
-    def id_lectura(self, p):
         self.semantics.generar_lectura(p.ID)
         if DEBUG_PARSER:
             print('Regla: lectura')
-        pass
-
-    @_('"," ID lectura1')
-    def lectura1(self, p):
-        self.semantics.generar_lectura(p.ID)
-        if DEBUG_PARSER:
-            print('Regla: lectura1')
-        pass
-
-    @_('empty')
-    def lectura1(self, _):
-        if DEBUG_PARSER:
-            print('Regla: lectura1 empty')
         pass
 
     # ESCRITURA

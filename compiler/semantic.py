@@ -508,7 +508,7 @@ class SemanticActions:
         else:
             raise Exception("Jump stack error")
 
-    def fun_call(self, fun_name, arg_list):
+    def fun_call(self, fun_name, arg_list, needs_return=False):
         """
         Genera las acciones necesarias para llamar a una función.
         Verifica coherencia en tipos y número de argumentos.
@@ -518,6 +518,8 @@ class SemanticActions:
         """
         # Verify that the function exists into the DirFunc
         fun = self.get_fun(fun_name)
+        if needs_return and fun.return_type == ReturnType.VOID:
+            raise Exception('Semantic Error: ' + fun.name + " is void. Return needed.")
         # Verify coherence in number of parameters
         if len(fun.param_table) != len(arg_list):
             raise Exception('Incorrect number of arguments in function call: ' + fun.name)
