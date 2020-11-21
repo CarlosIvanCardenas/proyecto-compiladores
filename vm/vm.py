@@ -50,9 +50,6 @@ class VM:
         self.const_memory = dict(map(lambda c: (c[1].address, c[1]), const_table.items()))
         self.fun_dir = fun_dir
 
-        for const in const_table.items():
-            print(const)
-
     def get_current_frame(self):
         """
         Funcion que regresa el frame actual, el cual se encuentra al tope del stack de ejecucion

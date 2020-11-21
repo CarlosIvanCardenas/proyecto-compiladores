@@ -540,18 +540,32 @@ class CompParser(SlyParser):
         return []
 
     # USAGE
-    @_('ID "[" exp "]"')
+    @_('ID add_fondo exp remove_fondo')
     def array_usage(self, p):
         self.semantics.array_usage(p.ID, 1)
         if DEBUG_PARSER:
             print('Regla: array_usage 1 dimension')
         pass
 
-    @_('ID "[" exp "]" "[" exp "]"')
+    @_('ID add_fondo exp remove_fondo add_fondo exp remove_fondo')
     def array_usage(self, p):
         self.semantics.array_usage(p.ID, 2)
         if DEBUG_PARSER:
             print('Regla: array_usage 2 dimensiones')
+        pass
+
+    @_('"["')
+    def add_fondo(self, _):
+        self.semantics.operators_stack.append('(')
+        if DEBUG_PARSER:
+            print('Regla: add_fondo')
+        pass
+
+    @_('"]"')
+    def remove_fondo(self, _):
+        self.semantics.operators_stack.pop()
+        if DEBUG_PARSER:
+            print('Regla: add_fondo')
         pass
 
     @_('')
