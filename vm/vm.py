@@ -136,7 +136,13 @@ class VM:
         elif LOCAL_ADDRESS_RANGE[0] <= addr < LOCAL_ADDRESS_RANGE[1]:
             return self.get_current_memory().read(addr)
         elif CONST_ADDRESS_RANGE[0] <= addr < CONST_ADDRESS_RANGE[1]:
-            return self.const_memory[addr].name
+            const = self.const_memory[addr]
+            if const.type == VarType.INT:
+                return int(const.name)
+            elif const.type == VarType.FLOAT:
+                return float(const.name)
+            else:
+                return const.name
         elif TEMP_ADDRESS_RANGE[0] <= addr < TEMP_ADDRESS_RANGE[1]:
             return self.temp_memory.read(addr)
         elif POINTER_ADDRESS_RANGE[0] <= addr < POINTER_ADDRESS_RANGE[1]:
@@ -248,7 +254,7 @@ class VM:
             value = self.read(C)
             if type(value) == str:
                 value = value.replace('\\n', '\n')
-            print(value, end='')
+            print(value)
         elif instruction == Operator.GOTO:
             """
             GOTO actualiza el valor del instruction pointer hacia la direccion del salto
@@ -285,8 +291,7 @@ class VM:
             Esta funcion se utiliza para mapear los valores para el parametro C en el contexto
             de ejecucion proximo a despertar.
             """
-            # TODO: Terminar operacion parametro y verificar que sea compatible con semantica
-            self.next_frame.memory.write(C, self.read(B))
+            self.next_frame.memory.write(C, self.read(A))
 
         elif instruction == Operator.ENDFUN:
             """

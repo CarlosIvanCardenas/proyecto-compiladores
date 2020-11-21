@@ -227,8 +227,8 @@ class SemanticActions:
         """
         params.reverse()
         for (param_name, param_type) in params:
-            self.functions_directory[self.current_scope].param_table.append(param_type)
             addr = self.v_memory_manager.local_addr.allocate_addr(param_type)
+            self.functions_directory[self.current_scope].param_table.append((addr, param_type))
             self.current_var_table[param_name] = VarTableItem(
                 name=param_name,
                 type=param_type,
@@ -508,7 +508,7 @@ class SemanticActions:
             arg = self.get_var(arg_name)
             # Verify coherence in types
             if param[1] == arg.type:
-                self.quad_list.append(Quadruple(Operator.PARAMETER, arg.address, None, index))
+                self.quad_list.append(Quadruple(Operator.PARAMETER, arg.address, None, param[0]))
             else:
                 raise Exception('Type mismatch, expected: ' + param[1] + " got: " + arg.type)
         # Generate action GOSUB
