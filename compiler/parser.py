@@ -303,6 +303,13 @@ class CompParser(SlyParser):
             print('Regla: escritura')
         pass
 
+    @_('WRITE "(" call_fun_no_void ")"')
+    def escritura(self, _):
+        self.semantics.generar_escritura()
+        if DEBUG_PARSER:
+            print('Regla: escritura')
+        pass
+
     # CICLOS CONDICIONALES
     # FOR
     @_('inicio_for initial_value_for end_value_for bloque')

@@ -12,7 +12,6 @@ Contiene la posicion del instruction pointer, ademas del bloque
 de memoria local correspondiente.
 """
 
-
 @dataclass
 class Frame:
     IP: int
@@ -72,7 +71,6 @@ class VM:
         Genera un nuevo frame y lo guarda temporalmente en self.next_frame para preparar a la MV
         para el cambio de contexto.
         """
-        # TODO: Definir bien los rangos del nuevo frame
         self.next_frame = Frame(IP=IP, memory=AddressBlock(
             LOCAL_ADDRESS_RANGE[0],
             LOCAL_ADDRESS_RANGE[1],
@@ -250,7 +248,6 @@ class VM:
             """
             WRITE escribe en pantalla el valor que se recoge de la variable que se intenta escribir.
             """
-            # TODO: Revisar como implementar en UI
             value = self.read(C)
             if type(value) == str:
                 value = value.replace('\\n', '\n')
