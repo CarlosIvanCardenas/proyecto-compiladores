@@ -1,4 +1,4 @@
-program factorial_recursive
+program factorial_iterative
 
 fun factorial(n: int): int {
     var val: int
