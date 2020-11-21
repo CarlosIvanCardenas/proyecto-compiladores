@@ -1,7 +1,11 @@
 program fibonacci_recursive
 
 fun fibonacci(n: int): int {
+    write("f with n ")
+    write(n)
     var val: int
+    var val1: int
+    var val2: int
     if (n < 0) {
         write("Incorrect input")
         val = 0
@@ -9,9 +13,13 @@ fun fibonacci(n: int): int {
         if ( n == 0 || n == 1) {
             val = n
         } else {
-            val = fibonacci(n-1) + fibonacci(n-2)
+            val1 = fibonacci(n-1)
+            val2 = fibonacci(n-2)
+            val = val1 + val2
         }
     }
+    write("val")
+    write(val)
     return (val)
 }
 

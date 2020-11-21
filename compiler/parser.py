@@ -219,7 +219,7 @@ class CompParser(SlyParser):
             print('Regla: arg_list empty')
         return []
 
-    @_('exp args_aux')
+    @_('add_fondo_arg exp remove_fondo_arg args_aux')
     def args(self, p):
         if DEBUG_PARSER:
             print('Regla: arg exp')
@@ -250,6 +250,20 @@ class CompParser(SlyParser):
         self.semantics.operators_stack.pop()
         if DEBUG_PARSER:
             print('Regla: add_fondo arg list')
+        pass
+
+    @_('empty')
+    def add_fondo_arg(self, _):
+        self.semantics.operators_stack.append('(')
+        if DEBUG_PARSER:
+            print('Regla: add_fondo arg')
+        pass
+
+    @_('empty')
+    def remove_fondo_arg(self, _):
+        self.semantics.operators_stack.pop()
+        if DEBUG_PARSER:
+            print('Regla: add_fondo arg')
         pass
 
     # ASIGNACIÓN
