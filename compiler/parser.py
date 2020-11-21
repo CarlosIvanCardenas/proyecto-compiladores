@@ -43,7 +43,7 @@ class CompParser(SlyParser):
 
     @_('VAR ID array_dec ":" tipo')
     def var(self, p):
-        self.semantics.add_var(var_name=p.ID, var_type=p.tipo, dims=p.array_dec)
+        self.semantics.add_var(var_name=p.ID, var_type=VarType(p.tipo), dims=p.array_dec)
         if DEBUG_PARSER:
             print('Regla: var con ' + p.ID)
         pass

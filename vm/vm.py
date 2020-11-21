@@ -49,8 +49,6 @@ class VM:
 
         self.quad_list = quad_list
         self.const_memory = dict(map(lambda c: (c[1].address, c[1]), const_table.items()))
-        for const in const_table.items():
-            print(const)
         self.fun_dir = fun_dir
 
     def get_current_frame(self):
@@ -138,7 +136,7 @@ class VM:
         elif LOCAL_ADDRESS_RANGE[0] <= addr < LOCAL_ADDRESS_RANGE[1]:
             return self.get_current_memory().read(addr)
         elif CONST_ADDRESS_RANGE[0] <= addr < CONST_ADDRESS_RANGE[1]:
-            return self.const_memory[addr]
+            return self.const_memory[addr].name
         elif TEMP_ADDRESS_RANGE[0] <= addr < TEMP_ADDRESS_RANGE[1]:
             return self.temp_memory.read(addr)
         elif POINTER_ADDRESS_RANGE[0] <= addr < POINTER_ADDRESS_RANGE[1]:
