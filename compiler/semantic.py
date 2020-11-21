@@ -504,13 +504,13 @@ class SemanticActions:
             raise Exception('Incorrect number of arguments in function call: ' + fun.name)
         # Generate action ERA size
         self.quad_list.append(Quadruple(Operator.ERA, None, None, fun.name))
-        for index, (param_type, arg_name) in enumerate(zip(fun.param_table, arg_list)):
+        for index, (param, arg_name) in enumerate(zip(fun.param_table, arg_list)):
             arg = self.get_var(arg_name)
             # Verify coherence in types
-            if param_type == arg.type:
+            if param[1] == arg.type:
                 self.quad_list.append(Quadruple(Operator.PARAMETER, arg.address, None, index))
             else:
-                raise Exception('Type mismatch, expected: ' + param_type + " got: " + arg.type)
+                raise Exception('Type mismatch, expected: ' + param[1] + " got: " + arg.type)
         # Generate action GOSUB
         self.quad_list.append(Quadruple(Operator.GOSUB, fun.name, None, fun.start_addr))
 
