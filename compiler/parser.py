@@ -70,7 +70,7 @@ class CompParser(SlyParser):
         self.semantics.end_fun()
         pass
 
-    @_('FUN ID param_list ":" return_type')
+    @_('FUN ID param_list return_type')
     def fun_header(self, p):
         if DEBUG_PARSER:
             print('Regla: fun_header ' + p.ID)
