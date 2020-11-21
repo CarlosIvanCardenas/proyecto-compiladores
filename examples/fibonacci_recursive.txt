@@ -1,33 +1,24 @@
 program fibonacci_recursive
 
 fun fibonacci(n: int): int {
-    write("f with n ")
-    write(n)
     var val: int
-    var val1: int
-    var val2: int
-    if (n < 0) {
-        write("Incorrect input")
-        val = 0
+    if ( n == 0 || n == 1) {
+        val = n
     } else {
-        if ( n == 0 || n == 1) {
-            val = n
-        } else {
-            val1 = fibonacci(n-1)
-            val2 = fibonacci(n-2)
-            val = val1 + val2
-        }
+        val = fibonacci(n-1) + fibonacci(n-2)
     }
-    write("val")
-    write(val)
     return (val)
 }
 
 main() {
     var n: int
     var f: int
-    write("Escribe valor de n: ")
+    write("Escribe el valor de n: ")
     read(n)
-    f = fibonacci(n)
-    write(f)
+    if (n < 0) {
+        write("Incorrect input")
+    } else {
+        f = fibonacci(n)
+        write(f)
+    }
 }

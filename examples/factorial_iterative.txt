@@ -1,16 +1,11 @@
-program factorial_recursive
+program factorial_iterative
 
 fun factorial(n: int): int {
     var val: int
     var i: int
-    if (n < 0) {
-        write("Incorrect input")
-        val = 0
-    } else {
         val = 1
-        for i = 1 to n+1 {
-            val = val * i
-        }
+    for i = 1 to n+1 {
+        val = val * i
     }
     return (val)
 }
@@ -20,6 +15,10 @@ main() {
     var f: int
     write("Escribe valor de n: ")
     read(n)
-    f = factorial(n)
-    write(f)
+    if (n < 0) {
+        write("Incorrect input")
+    } else {
+        f = factorial(n)
+        write(f)
+    }
 }

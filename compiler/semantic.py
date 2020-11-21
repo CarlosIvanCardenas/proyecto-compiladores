@@ -112,7 +112,8 @@ class SemanticActions:
         """
         # Save partition sizes for ERA instruction.
         fun = self.get_fun(self.current_scope)
-        fun.partition_sizes = self.v_memory_manager.local_addr.get_partition_sizes()
+        fun.local_partition_sizes = self.v_memory_manager.local_addr.get_partition_sizes()
+        fun.temp_partition_sizes = self.v_memory_manager.temp_addr.get_partition_sizes()
         self.quad_list.append(Quadruple(Operator.ENDFUN, None, None, None))
         self.set_global_scope()
 

@@ -20,6 +20,10 @@ main() {
     var f: int
     write("Escribe valor de n: ")
     read(n)
-    f = fibonacci(n)
-    write(f)
+    if (n < 0) {
+        write("Incorrect input")
+    } else {
+        f = fibonacci(n)
+        write(f)
+    }
 }
