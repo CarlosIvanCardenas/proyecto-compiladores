@@ -224,7 +224,7 @@ class VM:
             de la variable donde se guardara el input.
             """
             # TODO: Revisar como implementar en UI
-            var_type = frame.memory.get_partition(B)
+            var_type = frame.memory.get_partition(C)
             user_input = input()
             if var_type == VarType.INT:
                 try:
