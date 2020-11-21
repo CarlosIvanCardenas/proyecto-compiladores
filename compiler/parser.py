@@ -396,7 +396,7 @@ class CompParser(SlyParser):
     def expresion1(self, _):
         if DEBUG_PARSER:
             print('Regla: expresion1')
-        if self.semantics.operators_stack[-1] in ['>', '<', '!=', '==']:
+        if self.semantics.operators_stack[-1] in ['<=', '>=', '>', '<', '!=', '==']:
             self.semantics.generate_quad()
         pass
 
@@ -406,7 +406,7 @@ class CompParser(SlyParser):
             print('Regla: expresion1')
         pass
 
-    @_('GT', 'LT', 'NE', 'EQ')
+    @_('LTEQ', 'GTEQ', 'GT', 'LT', 'NE', 'EQ')
     def expresion2(self, p):
         if DEBUG_PARSER:
             print('Regla: expresion2')

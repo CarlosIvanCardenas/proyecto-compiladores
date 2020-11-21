@@ -222,7 +222,7 @@ class VM:
             """
             # TODO: Revisar como implementar en UI
             var_type = frame.memory.get_partition(C)
-            user_input = input("READ: ")
+            user_input = input(f'READ {var_type}: ')
             if var_type == VarType.INT:
                 try:
                     user_input = int(user_input)
