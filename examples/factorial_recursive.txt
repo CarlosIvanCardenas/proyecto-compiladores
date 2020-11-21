@@ -1,0 +1,25 @@
+program factorial_recursive
+
+fun factorial(n: int): int {
+    var val: int
+    if (n < 0) {
+        write("Incorrect input")
+        val = 0
+    } else {
+        if ( n == 0) {
+            val = 1
+        } else {
+            val = n * factorial(n-1)
+        }
+    }
+    return (val)
+}
+
+main() {
+    var n: int
+    var f: int
+    write("Escribe valor de n: ")
+    read(n)
+    f = factorial(n)
+    write(f)
+}
